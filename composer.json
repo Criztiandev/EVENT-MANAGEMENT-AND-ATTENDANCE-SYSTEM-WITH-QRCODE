@@ -1,0 +1,25 @@
+{
+  "name": "fujitsu/debesmscat-queueing-system",
+  "autoload": {
+    "psr-4": {
+      "controller\\": "src/controller",
+      "config\\": "src/config",
+      "lib\\": "src/lib",
+      "middleware\\": "src/middleware",
+      "class\\": "src/class"
+    }
+  },
+  "authors": [
+    {
+      "name": "criztiandev",
+      "email": "criztiandev@gmail.com"
+    }
+  ],
+  "require": {
+    "ramsey/uuid": "^4.7",
+    "symfony/dotenv": "^7.1"
+  },
+  "scripts": {
+    "dev": "src/server.php"
+  }
+}
