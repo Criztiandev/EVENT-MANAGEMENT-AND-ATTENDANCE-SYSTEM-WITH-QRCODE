@@ -8,7 +8,7 @@ use lib\Router\classes\Response;
 use Ramsey\Uuid\Rfc4122\UuidV4;
 use Ramsey\Uuid\Uuid;
 
-class ManageEventController
+class EventController
 {
 
     private const BASE_URL = "views/admin/event";
