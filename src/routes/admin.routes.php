@@ -1,6 +1,7 @@
 <?php
 use controller\admin\AdminController;
 use controller\admin\EventController;
+use controller\admin\OperatorController;
 use controller\admin\StudentController;
 use controller\admin\ManageUserController;
 use lib\Router\classes\Request;
@@ -50,14 +51,16 @@ $router->get("/student/update", fn(Request $req, Response $res) => StudentContro
 $router->post("/student/create", fn(Request $req, Response $res) => StudentController::createStudent($req, $res));
 $router->delete("/student/delete", fn(Request $req, Response $res) => StudentController::deleteStudent($req, $res));
 
-
-
 // operator
-$router->get("/operator", fn(Request $req, Response $res) => EventController::renderScreen($req, $res));
-$router->get("/operator/create", fn(Request $req, Response $res) => EventController::renderCreatePage($req, $res));
-$router->get("/operator/update", fn(Request $req, Response $res) => EventController::renderUpdatePage($req, $res));
-$router->get("/operator/delete", fn(Request $req, Response $res) => EventController::renderUpdatePage($req, $res));
+$router->get("/operator", fn(Request $req, Response $res) => OperatorController::renderScreen($req, $res));
+$router->get("/operator/create", fn(Request $req, Response $res) => OperatorController::renderCreatePage($req, $res));
+$router->get("/operator/update", fn(Request $req, Response $res) => OperatorController::renderUpdatePage($req, $res));
+$router->get("/operator/delete", fn(Request $req, Response $res) => OperatorController::renderUpdatePage($req, $res));
 
+
+// Student Actions
+$router->post("/operator/create", fn(Request $req, Response $res) => OperatorController::createOperator($req, $res));
+$router->delete("/operator/delete", fn(Request $req, Response $res) => OperatorController::deleteOperator($req, $res));
 
 
 // Users
