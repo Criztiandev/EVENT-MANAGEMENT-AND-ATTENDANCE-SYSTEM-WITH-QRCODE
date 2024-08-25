@@ -1,5 +1,7 @@
 <?php
 use controller\admin\AdminController;
+use controller\admin\AttendanceController;
+use controller\admin\DepartmentController;
 use controller\admin\EventController;
 use controller\admin\OperatorController;
 use controller\admin\StudentController;
@@ -23,23 +25,14 @@ $router->post("/event/create", fn(Request $req, Response $res) => EventControlle
 $router->delete("/event/delete", fn(Request $req, Response $res) => EventController::deleteEvent($req, $res));
 
 // Attendance
-$router->get("/attendance", fn(Request $req, Response $res) => EventController::renderScreen($req, $res));
-$router->get("/attendance/create", fn(Request $req, Response $res) => EventController::renderCreatePage($req, $res));
-$router->get("/attendance/update", fn(Request $req, Response $res) => EventController::renderUpdatePage($req, $res));
-$router->get("/attendance/delete", fn(Request $req, Response $res) => EventController::renderUpdatePage($req, $res));
+$router->get("/attendance", fn(Request $req, Response $res) => AttendanceController::renderScreen($req, $res));
+$router->get("/attendance/create", fn(Request $req, Response $res) => AttendanceController::renderCreatePage($req, $res));
+$router->get("/attendance/update", fn(Request $req, Response $res) => AttendanceController::renderUpdatePage($req, $res));
+$router->get("/attendance/delete", fn(Request $req, Response $res) => AttendanceController::renderUpdatePage($req, $res));
 
 
-// department
-$router->get("/department", fn(Request $req, Response $res) => EventController::renderScreen($req, $res));
-$router->get("/department/create", fn(Request $req, Response $res) => EventController::renderCreatePage($req, $res));
-$router->get("/department/update", fn(Request $req, Response $res) => EventController::renderUpdatePage($req, $res));
-$router->get("/department/delete", fn(Request $req, Response $res) => EventController::renderUpdatePage($req, $res));
 
-// course
-$router->get("/course", fn(Request $req, Response $res) => EventController::renderScreen($req, $res));
-$router->get("/course/create", fn(Request $req, Response $res) => EventController::renderCreatePage($req, $res));
-$router->get("/course/update", fn(Request $req, Response $res) => EventController::renderUpdatePage($req, $res));
-$router->get("/course/delete", fn(Request $req, Response $res) => EventController::renderUpdatePage($req, $res));
+
 
 
 // Student
@@ -58,13 +51,6 @@ $router->get("/operator/update", fn(Request $req, Response $res) => OperatorCont
 $router->get("/operator/delete", fn(Request $req, Response $res) => OperatorController::renderUpdatePage($req, $res));
 
 
-// Student Actions
+// operator Actions
 $router->post("/operator/create", fn(Request $req, Response $res) => OperatorController::createOperator($req, $res));
 $router->delete("/operator/delete", fn(Request $req, Response $res) => OperatorController::deleteOperator($req, $res));
-
-
-// Users
-$router->get("/users", fn(Request $req, Response $res) => ManageUserController::renderScreen($req, $res));
-$router->get("/users/create", fn(Request $req, Response $res) => ManageUserController::renderCreatePage($req, $res));
-$router->get("/users/update", fn(Request $req, Response $res) => ManageUserController::renderUpdatePage($req, $res));
-
