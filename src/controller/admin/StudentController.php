@@ -40,20 +40,20 @@ class StudentController
             $transformed_students = [];
 
             foreach ($students as $details) {
-                $accountModel = new Model("USERS");
-                $user = $accountModel->findOne(
-                    ["ID" => $details["USER_ID"]],
-                    ["select" => "FIRST_NAME, LAST_NAME"]
-                );
+                $accountResult = (new Model("USERS"))->findOne(["ID" => $details["USER_ID"]]);
+                $courseResult = (new Model("COURSE"))->findOne(["ID" => $details["COURSE"]], ["select" => "NAME"]);
+                $departmentResult = (new Model("DEPARTMENT"))->findOne(["ID" => $details["DEPARTMENT"]], ["select" => "NAME"]);
 
-                $fullName = $user ? $user["FIRST_NAME"] . " " . $user["LAST_NAME"] : "Unknown";
+
+                $fullName = $accountResult ? $accountResult["FIRST_NAME"] . " " . $accountResult["LAST_NAME"] : "Unknown";
 
                 $transformed_students[] = [
+                    ...$details,
                     "FULL_NAME" => $fullName,
-                    ...$details
+                    "COURSE" => $courseResult["NAME"],
+                    "DEPARTMENT" => $departmentResult["NAME"],
                 ];
             }
-
 
             $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["students" => $transformed_students]);
 
@@ -71,8 +71,12 @@ class StudentController
      */
     public static function renderCreatePage(Request $req, Response $res)
     {
+        $departmentModel = new Model("DEPARTMENT");
+        $courseModel = new Model("COURSE");
+        $courseCredentials = $courseModel->find([]);
+        $departmentCredentials = $departmentModel->find([]);
 
-        $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["roles" => self::ROLES]);
+        $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["departmentList" => $departmentCredentials, "courseList" => $courseCredentials, "roles" => self::ROLES]);
     }
 
 
@@ -135,6 +139,7 @@ class StudentController
         $studentModel = new Model("STUDENT");
         $accountModel = new Model("USERS");
 
+
         // check if the email exist
         $existingAccount = $accountModel->findOne(["#or" => ["EMAIL" => $credentials["EMAIL"], "PHONE_NUMBER" => $credentials["PHONE_NUMBER"]]]);
 
@@ -172,8 +177,8 @@ class StudentController
             "USER_ID" => $UID,
             "STUDENT_ID" => $credentials["STUDENT_ID"],
             "YEAR_LEVEL" => $credentials["YEAR_LEVEL"],
-            "DEPARTMENT" => $credentials["DEPARTMENT"],
-            "COURSE" => $credentials["COURSE"],
+            "DEPARTMENT" => $credentials["DEPARTMENT_ID"],
+            "COURSE" => $credentials["COURSE_ID"],
         ]);
 
 

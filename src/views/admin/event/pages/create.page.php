@@ -11,7 +11,6 @@ require from("views/helper/partials/sidebar.partials.php");
             <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">
                 Create New Event
             </h2>
-
             <form action="/event/create" method="POST">
                 <div class="w-full mb-4">
                     <label for="NAME" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>

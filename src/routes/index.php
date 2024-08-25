@@ -3,14 +3,14 @@ use lib\Router\Express;
 
 
 $routes = [
-    "user" => 'routes/user.routes.php',
+    "operator" => 'routes/user.routes.php',
+    "student" => 'routes/user.routes.php',
     "admin" => 'routes/admin.routes.php',
     'auth' => 'routes/auth.routes.php'
 ];
 
 $UID = Express::Session()->get("UID");
 $credentials = Express::Session()->get("credentials");
-
 
 try {
     if ($UID && isset($routes[$credentials["role"]])) {

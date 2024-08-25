@@ -50,22 +50,25 @@ class AuthController
         $userModel = new Model("USERS");
         $user_exist = $userModel->findOne(["EMAIL" => $email]);
 
+
         if (!$user_exist) {
             $res->status(400)->redirect("/", ["error" => "User doesnt exist"]);
         }
 
-        // if (!$user_exist && !password_verify($password, $user_exist["PASSWORD"])) {
-        //     $res->status(400)->redirect("/", ["error" => "Password is in correct"]);
-        // }
+        if (!$user_exist && !password_verify($password, $user_exist["PASSWORD"])) {
+            $res->status(400)->redirect("/", ["error" => "Password is in correct"]);
+        }
 
         // create session
         Express::Session()->insert("UID", $user_exist["ID"]);
+
         Express::Session()->insert("credentials", [
             "fullName" => $user_exist["FIRST_NAME"] . " " . $user_exist["LAST_NAME"],
             "email" => $user_exist["EMAIL"],
-            "role" => "admin",
+            "role" => $user_exist["ROLE"],
         ]);
         session_regenerate_id(true);
+
         $res->status(200)->redirect("/", ["success" => "Login successfully"]);
 
     }

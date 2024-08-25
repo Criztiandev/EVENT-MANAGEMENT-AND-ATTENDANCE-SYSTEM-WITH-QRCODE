@@ -97,42 +97,47 @@ require from("views/helper/partials/sidebar.partials.php");
                             placeholder="Enter your password" required="" />
                     </div>
 
-                    <!-- Department -->
                     <div>
                         <label for="DEPARTMENT"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Department</label>
-                        <select name="DEPARTMENT" id="DEPARTMENT"
+                        <select name="DEPARTMENT_ID" id="DEPARTMENT"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             required>
                             <option disabled selected>Select your Department</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
+                            <?php foreach ($departmentList as $department): ?>
+                                <option value="<?= $department["ID"] ?>"><?= $department["NAME"] ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
-                    <!-- Department -->
                     <div>
                         <label for="COURSE"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Course</label>
-                        <select name="COURSE" id="COURSE"
+                        <select name="COURSE_ID" id="COURSE"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             required>
-                            <option disabled selected>Select your Course</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
+                            <option disabled selected>Select Course</option>
+                            <?php foreach ($courseList as $items): ?>
+                                <option value="<?= $items["ID"] ?>"><?= $items["NAME"] ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
-                    <!-- Year level -->
-                    <div class="w-full">
+
+                    <div>
                         <label for="YEAR_LEVEL"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Year level</label>
-                        <input type="text" name="YEAR_LEVEL" id="YEAR_LEVEL"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Year Level</label>
+                        <select name="YEAR_LEVEL" id="YEAR_LEVEL"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="Enter your year_level" required="" />
+                            required>
+                            <option disabled selected>Select your Year level</option>
+                            <option value="1">1st year</option>
+                            <option value="2">2nd year</option>
+                            <option value="3">3rd year</option>
+                            <option value="4">4th year</option>
+                        </select>
                     </div>
+
 
                 </div>
 

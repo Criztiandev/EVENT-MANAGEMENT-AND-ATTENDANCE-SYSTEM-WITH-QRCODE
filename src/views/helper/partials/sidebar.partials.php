@@ -4,7 +4,11 @@ use lib\Router\Express;
 
 require from("views/navigation.php");
 $role = Express::Session()->get("credentials")["role"];
-$navigation = $role === 'user' ? $user_navigation : $admin_navigation;
+
+$navigation = [
+    "student" => $user_navigation,
+    "admin" => $admin_navigation
+];
 
 function isUri($path)
 {
@@ -20,7 +24,7 @@ function isUri($path)
     <div class="overflow-y-auto py-5 px-3 h-full  dark:bg-gray-800 pt-6">
 
         <ul class="space-y-2">
-            <?php foreach ($navigation as $nav): ?>
+            <?php foreach ($navigation[$role] as $nav): ?>
                 <li>
                     <a href="<?= $nav['path'] ?>"
                         class="<?= isUri($nav['path']) ? "bg-gray-300 dark:text-black text-gray-900 dark:hover:text-black" : "opacity-70" ?> flex items-center p-2 text-base font-medium  rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-black group">
