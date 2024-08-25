@@ -29,7 +29,7 @@ $credentials = Express::Session()->get("credentials");
 
             <!-- Logo -->
             <a href="/" class="flex items-center justify-between mr-4">
-                <span class="self-center text-2xl font-semibold whitespace-nowrap  ">Logo</span>
+                <span class="self-center text-2xl font-semibold whitespace-nowrap  ">DEBESMSCAT EVENT MANAGEMENT</span>
             </a>
         </div>
 
