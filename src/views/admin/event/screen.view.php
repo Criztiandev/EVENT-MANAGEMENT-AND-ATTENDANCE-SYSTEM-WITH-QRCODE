@@ -37,6 +37,8 @@ require from("views/helper/partials/sidebar.partials.php");
                             <tr>
                                 <th scope="col" class="px-4 py-3">Name</th>
                                 <th scope="col" class="px-4 py-3">Venue</th>
+                                <th scope="col" class="px-4 py-3">Departments</th>
+                                <th scope="col" class="px-4 py-3">Course</th>
                                 <th scope="col" class="px-4 py-3">Date</th>
                                 <th scope="col" class="px-4 py-3">time</th>
                                 <th scope="col" class="px-4 py-3 text-center">
@@ -54,6 +56,13 @@ require from("views/helper/partials/sidebar.partials.php");
                                     <td class="px-4 py-3">
                                         <?= $items["LOCATION"] ?>
                                     </td>
+                                    <td class="px-4 py-3">
+                                        <?= $items["DEPARTMENT"]["NAME"] ?>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <?= $items["COURSE"]["NAME"] ?>
+                                    </td>
+
                                     <td class="px-4 py-3">
                                         <?= $items["START_DATE"] ?>
                                         <?= $items["END_DATE"] ?>

@@ -36,7 +36,24 @@ class EventController
         try {
             $eventModel = self::getBaseModel();
             $events = $eventModel->find();
-            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["events" => $events]);
+
+            $transformed_event = array_map(function ($event) {
+                $departmentModel = new Model("DEPARTMENT");
+                $courseModel = new Model("COURSE");
+
+                $departmentName = $departmentModel->findOne(["ID" => $event["DEPARTMENT_ID"]], ["select" => "NAME"]);
+                $courseName = $courseModel->findOne(["ID" => $event["COURSE_ID"]], ["select" => "NAME"]);
+
+
+                return [
+                    ...$event,
+                    "DEPARTMENT" => $departmentName,
+                    "COURSE" => $courseName,
+                ];
+
+            }, $events);
+
+            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["events" => $transformed_event]);
 
         } catch (\Exception $e) {
             $res->status(500)->json(["error" => "Failed to fetch Events: " . $e->getMessage()]);
@@ -52,8 +69,13 @@ class EventController
      */
     public static function renderCreatePage(Request $req, Response $res)
     {
+        $departmentModel = new Model("DEPARTMENT");
+        $courseModel = new Model("COURSE");
+        $courseCredentials = $courseModel->find([]);
+        $departmentCredentials = $departmentModel->find([]);
 
-        $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["roles" => self::ROLES]);
+
+        $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["departmentList" => $departmentCredentials, "courseList" => $courseCredentials, "roles" => self::ROLES]);
     }
 
 

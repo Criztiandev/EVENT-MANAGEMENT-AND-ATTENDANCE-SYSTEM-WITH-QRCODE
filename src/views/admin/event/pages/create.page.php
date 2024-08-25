@@ -73,22 +73,26 @@ require from("views/helper/partials/sidebar.partials.php");
                     <div>
                         <label for="DEPARTMENT"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Department</label>
-                        <select name="DEPARTMENT" id="DEPARTMENT"
+                        <select name="DEPARTMENT_ID" id="DEPARTMENT"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             required>
-                            <option disabled selected>Select your Year level</option>
-                            <option value="CASCSCS">CASCSCS</option>
+                            <option disabled selected>Select your Department</option>
+                            <?php foreach ($departmentList as $department): ?>
+                                <option value="<?= $department["ID"] ?>"><?= $department["NAME"] ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
                     <div>
                         <label for="COURSE"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Course</label>
-                        <select name="COURSE" id="COURSE"
+                        <select name="COURSE_ID" id="COURSE"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             required>
-                            <option disabled selected>Select your Year level</option>
-                            <option value="CASCSCS">CASCSCS</option>
+                            <option disabled selected>Select Course</option>
+                            <?php foreach ($courseList as $department): ?>
+                                <option value="<?= $department["ID"] ?>"><?= $department["NAME"] ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
@@ -101,7 +105,10 @@ require from("views/helper/partials/sidebar.partials.php");
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             required>
                             <option disabled selected>Select your Year level</option>
-                            <option value="CASCSCS">CASCSCS</option>
+                            <option value="1">1st year</option>
+                            <option value="2">2nd year</option>
+                            <option value="3">3rd year</option>
+                            <option value="4">4th year</option>
                         </select>
                     </div>
 
