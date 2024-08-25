@@ -124,25 +124,11 @@ class DepartmentController
             return $res->status(400)->redirect("/department/create", ["error" => "Department already exists"]);
         }
 
-        // Check if the dates are in the past or exceed 7 days in the future
-        $currentDate = new \DateTime();
-        $startDate = new \DateTime($credentials["START_DATE"]);
-        $endDate = new \DateTime($credentials["END_DATE"]);
-        $maxFutureDate = (new \DateTime())->modify('+7 days');
-
-        if ($startDate < $currentDate || $endDate < $currentDate) {
-            return $res->status(400)->redirect("/department/create", ["error" => "Department dates cannot be in the past"]);
-        }
-
-        if ($startDate > $maxFutureDate || $endDate > $maxFutureDate) {
-            return $res->status(400)->redirect("/department/create", ["error" => "Department dates cannot exceed 7 days in the future"]);
-        }
-
         $UID = Uuid::uuid4()->toString();
         $createdDepartment = $departmentModel->createOne([
             "ID" => $UID,
             ...$credentials,
-            "STATUS" => "INACTIVE"
+            "STATUS" => "ACTIVE"
         ]);
 
         if (!$createdDepartment) {
