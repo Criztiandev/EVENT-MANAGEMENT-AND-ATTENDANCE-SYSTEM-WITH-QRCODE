@@ -55,11 +55,6 @@ $router->delete("/operator/delete", fn(Request $req, Response $res) => OperatorC
 
 
 
-
-
-
-
-
 // department
 $router->get("/department", fn(Request $req, Response $res) => DepartmentController::renderScreen($req, $res));
 $router->get("/department/create", fn(Request $req, Response $res) => DepartmentController::renderCreatePage($req, $res));
@@ -71,10 +66,7 @@ $router->post("/department/create", fn(Request $req, Response $res) => Departmen
 $router->delete("/department/delete", fn(Request $req, Response $res) => DepartmentController::deleteDepartment($req, $res));
 
 
-
-
-
-// department
+// course
 $router->get("/course", fn(Request $req, Response $res) => CourseController::renderScreen($req, $res));
 $router->get("/course/create", fn(Request $req, Response $res) => CourseController::renderCreatePage($req, $res));
 $router->get("/course/update", fn(Request $req, Response $res) => CourseController::renderUpdatePage($req, $res));

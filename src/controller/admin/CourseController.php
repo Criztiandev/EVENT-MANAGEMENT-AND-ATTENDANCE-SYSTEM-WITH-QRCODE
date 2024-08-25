@@ -36,7 +36,19 @@ class CourseController
         try {
             $courseModel = self::getBaseModel();
             $courses = $courseModel->find();
-            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["courses" => $courses]);
+
+            $transformed_course = array_map(function ($items) {
+                $departmentModel = new Model("DEPARTMENT");
+                $departmentName = $departmentModel->findOne(["ID" => $items["DEPARTMENT_ID"]], ["select" => "NAME"]);
+
+                return [
+                    "NAME" => $items["NAME"],
+                    "DEPARTMENT" => $departmentName["NAME"],
+                    "STATUS" => $items["STATUS"]
+                ];
+            }, $courses);
+
+            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["courses" => $transformed_course]);
 
         } catch (\Exception $e) {
             $res->status(500)->json(["error" => "Failed to fetch Courses: " . $e->getMessage()]);
@@ -53,7 +65,10 @@ class CourseController
     public static function renderCreatePage(Request $req, Response $res)
     {
 
-        $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["roles" => self::ROLES]);
+        $departmentModel = new Model("DEPARTMENT");
+        $credentials = $departmentModel->find([]);
+
+        $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["roles" => self::ROLES, "department" => $credentials]);
     }
 
 
@@ -118,30 +133,17 @@ class CourseController
         $credentials = $req->body;
         $courseModel = new Model("COURSE");
 
-        $existingCourse = $courseModel->findOne(["NAME" => $credentials["NAME"]]);
+        $existingCourse = $courseModel->findOne(["#and" => ["NAME" => $credentials["NAME"], "DEPARTMENT_ID" => $credentials["DEPARTMENT"]]]);
 
         if ($existingCourse) {
             return $res->status(400)->redirect("/course/create", ["error" => "Course already exists"]);
         }
 
-        // Check if the dates are in the past or exceed 7 days in the future
-        $currentDate = new \DateTime();
-        $startDate = new \DateTime($credentials["START_DATE"]);
-        $endDate = new \DateTime($credentials["END_DATE"]);
-        $maxFutureDate = (new \DateTime())->modify('+7 days');
-
-        if ($startDate < $currentDate || $endDate < $currentDate) {
-            return $res->status(400)->redirect("/course/create", ["error" => "Course dates cannot be in the past"]);
-        }
-
-        if ($startDate > $maxFutureDate || $endDate > $maxFutureDate) {
-            return $res->status(400)->redirect("/course/create", ["error" => "Course dates cannot exceed 7 days in the future"]);
-        }
-
         $UID = Uuid::uuid4()->toString();
         $createdCourse = $courseModel->createOne([
             "ID" => $UID,
-            ...$credentials,
+            "NAME" => $credentials["NAME"],
+            "DEPARTMENT_ID" => $credentials["DEPARTMENT"],
             "STATUS" => "INACTIVE"
         ]);
 
