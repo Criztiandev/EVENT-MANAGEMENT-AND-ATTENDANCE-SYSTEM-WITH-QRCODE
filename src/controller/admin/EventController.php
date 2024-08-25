@@ -54,7 +54,7 @@ class EventController
             }, $events);
 
 
-            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["events" => $transformed_event]);
+            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["events" => array_reverse($transformed_event)]);
 
         } catch (\Exception $e) {
             $res->status(500)->json(["error" => "Failed to fetch Events: " . $e->getMessage()]);
@@ -117,11 +117,14 @@ class EventController
     }
 
 
-    public static function renderSessiion(Request $req, Response $res)
+    public static function renderSession(Request $req, Response $res)
     {
         try {
+            $eventModel = new Model("EVENT");
             $attendanceModel = new Model("Attendance");
             $event_id = $req->query["id"];
+
+            $event_credentials = $eventModel->findOne(["ID" => $event_id]);
 
             // get all the attendance related
             $attendance_related = $attendanceModel->find(["EVENT_ID" => $event_id]);
@@ -142,9 +145,12 @@ class EventController
 
             }, $attendance_related);
 
+            $routes = [
+                "ACTIVE" => "/pages/session-preparation.php",
+                "START" => "/pages/session-start.php"
+            ];
 
-
-            $res->status(200)->render(self::BASE_URL . "/pages/session-start.php", ["EVENT_ID" => $event_id, "student_list" => $transformed_attendees_list]);
+            $res->status(200)->render(self::BASE_URL . $routes[$event_credentials["STATUS"]], ["EVENT_ID" => $event_id, "student_list" => $transformed_attendees_list]);
         } catch (\Exception $e) {
             $res->status(500)->json(["error" => "Failed to fetch Events: " . $e->getMessage()]);
         }
@@ -188,7 +194,7 @@ class EventController
         $createdEvent = $eventModel->createOne([
             "ID" => $UID,
             ...$credentials,
-            "STATUS" => "INACTIVE"
+            "STATUS" => "ACTIVE"
         ]);
 
         if (!$createdEvent) {
@@ -238,6 +244,63 @@ class EventController
 
 
     }
+
+
+    public static function startEvent(Request $req, Response $res)
+    {
+        $eventModel = new Model("EVENT");
+        $EVENT_ID = $req->body["EVENT_ID"];
+
+        $event_credentials = $eventModel->findOne(["ID" => $EVENT_ID]);
+        if (!$event_credentials) {
+            $res->status(400)->redirect("/event/session-start?id=" . $EVENT_ID, ["error" => "Event doesn't exist"]);
+        }
+
+        // Update the session status to start
+        $started_session = $eventModel->updateOne(["STATUS" => "START"], ["ID" => $EVENT_ID], );
+        if (!$started_session) {
+            $res->status(400)->redirect("/event/session-start?id=" . $EVENT_ID, ["error" => "Event doesn't update"]);
+        }
+
+        $res->status(200)->redirect("/event/session-start?id=" . $EVENT_ID, ["success" => "Event Started"]);
+
+    }
+
+
+    public static function endEvent(Request $req, Response $res)
+    {
+        $eventModel = new Model("EVENT");
+        $EVENT_ID = $req->body["EVENT_ID"];
+
+        $event_credentials = $eventModel->findOne(["ID" => $EVENT_ID]);
+        if (!$event_credentials) {
+            $res->status(400)->redirect("/event/session-start?id=" . $EVENT_ID, ["error" => "Event doesn't exist"]);
+        }
+
+        // Update the session status to start
+        $started_session = $eventModel->updateOne(["STATUS" => "END"], ["ID" => $EVENT_ID], );
+        if (!$started_session) {
+            $res->status(400)->redirect("/event/session-start?id=" . $EVENT_ID, ["error" => "Event doesn't update"]);
+        }
+        $res->status(200)->redirect("/event", ["success" => "Event Ended"]);
+
+    }
+
+
+    public static function printEvent(Request $req, Response $res)
+    {
+        $EVENT_ID = $req->query["id"];
+        $eventModel = new Model("EVENT");
+
+
+        $event_credentials = $eventModel->findOne(["ID" => $EVENT_ID, "STATUS" => "END"]);
+        if (!$event_credentials) {
+            $res->status(400)->redirect("/event/session-start?id=" . $EVENT_ID, ["error" => "Event doesn't exist"]);
+        }
+        dd($event_credentials);
+
+    }
+
 
 
     protected static function userExist($email, $phone_number)

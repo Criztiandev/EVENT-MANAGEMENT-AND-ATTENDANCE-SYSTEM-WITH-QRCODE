@@ -21,11 +21,16 @@ $router->get("/event", fn(Request $req, Response $res) => EventController::rende
 $router->get("/event/create", fn(Request $req, Response $res) => EventController::renderCreatePage($req, $res));
 $router->get("/event/update", fn(Request $req, Response $res) => EventController::renderUpdatePage($req, $res));
 
-$router->get("/event/session-start", fn(Request $req, Response $res) => EventController::renderSessiion($req, $res));
+$router->get("/event/session-start", fn(Request $req, Response $res) => EventController::renderSession($req, $res));
 
 // Event Actions
 $router->post("/event/create", fn(Request $req, Response $res) => EventController::createEvent($req, $res));
 $router->delete("/event/delete", fn(Request $req, Response $res) => EventController::deleteEvent($req, $res));
+
+$router->post("/event/session-start", fn(Request $req, Response $res) => EventController::startEvent($req, $res));
+$router->post("/event/session-end", fn(Request $req, Response $res) => EventController::endEvent($req, $res));
+$router->get("/event/session-print", fn(Request $req, Response $res) => EventController::printEvent($req, $res));
+
 
 // Attendance
 $router->get("/attendance", fn(Request $req, Response $res) => AttendanceController::renderScreen($req, $res));
