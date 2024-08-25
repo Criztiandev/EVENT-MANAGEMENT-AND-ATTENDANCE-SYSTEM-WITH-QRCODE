@@ -8,11 +8,11 @@ use lib\Router\classes\Response;
 use Ramsey\Uuid\Rfc4122\UuidV4;
 use Ramsey\Uuid\Uuid;
 
-class EventController
+class DepartmentController
 {
 
-    private const BASE_URL = "views/admin/event";
-    private const BASE_MODEL = "EVENT";
+    private const BASE_URL = "views/admin/department";
+    private const BASE_MODEL = "DEPARTMENT";
     private const ROLES = ["admin", "user"];
 
     private static function getBaseModel()
@@ -34,12 +34,12 @@ class EventController
     public static function renderScreen(Request $req, Response $res)
     {
         try {
-            $eventModel = self::getBaseModel();
-            $events = $eventModel->find();
-            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["events" => $events]);
+            $departmentModel = self::getBaseModel();
+            $departments = $departmentModel->find();
+            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["departments" => $departments]);
 
         } catch (\Exception $e) {
-            $res->status(500)->json(["error" => "Failed to fetch Events: " . $e->getMessage()]);
+            $res->status(500)->json(["error" => "Failed to fetch Departments: " . $e->getMessage()]);
         }
     }
 
@@ -66,21 +66,21 @@ class EventController
     public static function renderUpdatePage(Request $req, Response $res)
     {
         try {
-            $eventID = $req->query["id"];
-            $eventModel = new Model("EVENT");
+            $departmentID = $req->query["id"];
+            $departmentModel = new Model("DEPARTMENT");
 
-            $credentials = $eventModel->findOne(["ID" => $eventID]);
+            $credentials = $departmentModel->findOne(["ID" => $departmentID]);
 
 
             if (!$credentials) {
-                $res->status(400)->redirect("/users/update?id=" . $eventID, ["error" => "Event doesn't exist"]);
+                $res->status(400)->redirect("/users/update?id=" . $departmentID, ["error" => "Department doesn't exist"]);
             }
 
 
             $res->status(200)->render(
                 self::BASE_URL . "/pages/update.page.php",
                 [
-                    "UID" => $eventID,
+                    "UID" => $departmentID,
                     "details" => $credentials,
                     "roles" => self::ROLES
                 ]
@@ -100,7 +100,7 @@ class EventController
 
             $res->status(200)->render(self::BASE_URL . "/pages/session-start.php");
         } catch (\Exception $e) {
-            $res->status(500)->json(["error" => "Failed to fetch Events: " . $e->getMessage()]);
+            $res->status(500)->json(["error" => "Failed to fetch Departments: " . $e->getMessage()]);
         }
     }
 
@@ -113,15 +113,15 @@ class EventController
      * @param \lib\Router\classes\Response $res
      * @return void
      */
-    public static function createEvent(Request $req, Response $res)
+    public static function createDepartment(Request $req, Response $res)
     {
         $credentials = $req->body;
-        $eventModel = new Model("EVENT");
+        $departmentModel = new Model("DEPARTMENT");
 
-        $existingEvent = $eventModel->findOne(["NAME" => $credentials["NAME"]]);
+        $existingDepartment = $departmentModel->findOne(["NAME" => $credentials["NAME"]]);
 
-        if ($existingEvent) {
-            return $res->status(400)->redirect("/event/create", ["error" => "Event already exists"]);
+        if ($existingDepartment) {
+            return $res->status(400)->redirect("/department/create", ["error" => "Department already exists"]);
         }
 
         // Check if the dates are in the past or exceed 7 days in the future
@@ -131,25 +131,25 @@ class EventController
         $maxFutureDate = (new \DateTime())->modify('+7 days');
 
         if ($startDate < $currentDate || $endDate < $currentDate) {
-            return $res->status(400)->redirect("/event/create", ["error" => "Event dates cannot be in the past"]);
+            return $res->status(400)->redirect("/department/create", ["error" => "Department dates cannot be in the past"]);
         }
 
         if ($startDate > $maxFutureDate || $endDate > $maxFutureDate) {
-            return $res->status(400)->redirect("/event/create", ["error" => "Event dates cannot exceed 7 days in the future"]);
+            return $res->status(400)->redirect("/department/create", ["error" => "Department dates cannot exceed 7 days in the future"]);
         }
 
         $UID = Uuid::uuid4()->toString();
-        $createdEvent = $eventModel->createOne([
+        $createdDepartment = $departmentModel->createOne([
             "ID" => $UID,
             ...$credentials,
             "STATUS" => "INACTIVE"
         ]);
 
-        if (!$createdEvent) {
-            return $res->status(400)->redirect("/event/create", ["error" => "Creating event went wrong"]);
+        if (!$createdDepartment) {
+            return $res->status(400)->redirect("/department/create", ["error" => "Creating department went wrong"]);
         }
 
-        return $res->status(200)->redirect("/event/create", ["success" => "Event created successfully"]);
+        return $res->status(200)->redirect("/department/create", ["success" => "Department created successfully"]);
     }
 
     /**
@@ -171,24 +171,24 @@ class EventController
      * @param \lib\Router\classes\Response $res
      * @return void
      */
-    public static function deleteEvent(Request $req, Response $res)
+    public static function deleteDepartment(Request $req, Response $res)
     {
         $UID = $req->query["id"];
-        $eventModel = new Model("EVENT");
+        $departmentModel = new Model("DEPARTMENT");
 
-        $existEvent = $eventModel->findOne(["ID" => $UID], ["select" => "ID"]);
-        if (!$existEvent) {
-            return $res->status(400)->redirect("/event", ["error" => "Event doesn't exist"]);
+        $existDepartment = $departmentModel->findOne(["ID" => $UID], ["select" => "ID"]);
+        if (!$existDepartment) {
+            return $res->status(400)->redirect("/department", ["error" => "Department doesn't exist"]);
         }
 
 
-        // delete the event
-        $deletedEvent = $eventModel->deleteOne(["ID" => $UID]);
-        if (!$deletedEvent) {
-            return $res->status(400)->redirect("/event", ["error" => "Deletion Failed"]);
+        // delete the department
+        $deletedDepartment = $departmentModel->deleteOne(["ID" => $UID]);
+        if (!$deletedDepartment) {
+            return $res->status(400)->redirect("/department", ["error" => "Deletion Failed"]);
         }
 
-        $res->status(200)->redirect("/event", ["success" => "Deleted Successfully"]);
+        $res->status(200)->redirect("/department", ["success" => "Deleted Successfully"]);
 
 
     }

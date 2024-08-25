@@ -8,11 +8,11 @@ use lib\Router\classes\Response;
 use Ramsey\Uuid\Rfc4122\UuidV4;
 use Ramsey\Uuid\Uuid;
 
-class EventController
+class CourseController
 {
 
-    private const BASE_URL = "views/admin/event";
-    private const BASE_MODEL = "EVENT";
+    private const BASE_URL = "views/admin/course";
+    private const BASE_MODEL = "COURSE";
     private const ROLES = ["admin", "user"];
 
     private static function getBaseModel()
@@ -34,12 +34,12 @@ class EventController
     public static function renderScreen(Request $req, Response $res)
     {
         try {
-            $eventModel = self::getBaseModel();
-            $events = $eventModel->find();
-            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["events" => $events]);
+            $courseModel = self::getBaseModel();
+            $courses = $courseModel->find();
+            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["courses" => $courses]);
 
         } catch (\Exception $e) {
-            $res->status(500)->json(["error" => "Failed to fetch Events: " . $e->getMessage()]);
+            $res->status(500)->json(["error" => "Failed to fetch Courses: " . $e->getMessage()]);
         }
     }
 
@@ -66,21 +66,21 @@ class EventController
     public static function renderUpdatePage(Request $req, Response $res)
     {
         try {
-            $eventID = $req->query["id"];
-            $eventModel = new Model("EVENT");
+            $courseID = $req->query["id"];
+            $courseModel = new Model("COURSE");
 
-            $credentials = $eventModel->findOne(["ID" => $eventID]);
+            $credentials = $courseModel->findOne(["ID" => $courseID]);
 
 
             if (!$credentials) {
-                $res->status(400)->redirect("/users/update?id=" . $eventID, ["error" => "Event doesn't exist"]);
+                $res->status(400)->redirect("/users/update?id=" . $courseID, ["error" => "Course doesn't exist"]);
             }
 
 
             $res->status(200)->render(
                 self::BASE_URL . "/pages/update.page.php",
                 [
-                    "UID" => $eventID,
+                    "UID" => $courseID,
                     "details" => $credentials,
                     "roles" => self::ROLES
                 ]
@@ -100,7 +100,7 @@ class EventController
 
             $res->status(200)->render(self::BASE_URL . "/pages/session-start.php");
         } catch (\Exception $e) {
-            $res->status(500)->json(["error" => "Failed to fetch Events: " . $e->getMessage()]);
+            $res->status(500)->json(["error" => "Failed to fetch Courses: " . $e->getMessage()]);
         }
     }
 
@@ -113,15 +113,15 @@ class EventController
      * @param \lib\Router\classes\Response $res
      * @return void
      */
-    public static function createEvent(Request $req, Response $res)
+    public static function createCourse(Request $req, Response $res)
     {
         $credentials = $req->body;
-        $eventModel = new Model("EVENT");
+        $courseModel = new Model("COURSE");
 
-        $existingEvent = $eventModel->findOne(["NAME" => $credentials["NAME"]]);
+        $existingCourse = $courseModel->findOne(["NAME" => $credentials["NAME"]]);
 
-        if ($existingEvent) {
-            return $res->status(400)->redirect("/event/create", ["error" => "Event already exists"]);
+        if ($existingCourse) {
+            return $res->status(400)->redirect("/course/create", ["error" => "Course already exists"]);
         }
 
         // Check if the dates are in the past or exceed 7 days in the future
@@ -131,25 +131,25 @@ class EventController
         $maxFutureDate = (new \DateTime())->modify('+7 days');
 
         if ($startDate < $currentDate || $endDate < $currentDate) {
-            return $res->status(400)->redirect("/event/create", ["error" => "Event dates cannot be in the past"]);
+            return $res->status(400)->redirect("/course/create", ["error" => "Course dates cannot be in the past"]);
         }
 
         if ($startDate > $maxFutureDate || $endDate > $maxFutureDate) {
-            return $res->status(400)->redirect("/event/create", ["error" => "Event dates cannot exceed 7 days in the future"]);
+            return $res->status(400)->redirect("/course/create", ["error" => "Course dates cannot exceed 7 days in the future"]);
         }
 
         $UID = Uuid::uuid4()->toString();
-        $createdEvent = $eventModel->createOne([
+        $createdCourse = $courseModel->createOne([
             "ID" => $UID,
             ...$credentials,
             "STATUS" => "INACTIVE"
         ]);
 
-        if (!$createdEvent) {
-            return $res->status(400)->redirect("/event/create", ["error" => "Creating event went wrong"]);
+        if (!$createdCourse) {
+            return $res->status(400)->redirect("/course/create", ["error" => "Creating course went wrong"]);
         }
 
-        return $res->status(200)->redirect("/event/create", ["success" => "Event created successfully"]);
+        return $res->status(200)->redirect("/course/create", ["success" => "Course created successfully"]);
     }
 
     /**
@@ -171,24 +171,24 @@ class EventController
      * @param \lib\Router\classes\Response $res
      * @return void
      */
-    public static function deleteEvent(Request $req, Response $res)
+    public static function deleteCourse(Request $req, Response $res)
     {
         $UID = $req->query["id"];
-        $eventModel = new Model("EVENT");
+        $courseModel = new Model("COURSE");
 
-        $existEvent = $eventModel->findOne(["ID" => $UID], ["select" => "ID"]);
-        if (!$existEvent) {
-            return $res->status(400)->redirect("/event", ["error" => "Event doesn't exist"]);
+        $existCourse = $courseModel->findOne(["ID" => $UID], ["select" => "ID"]);
+        if (!$existCourse) {
+            return $res->status(400)->redirect("/course", ["error" => "Course doesn't exist"]);
         }
 
 
-        // delete the event
-        $deletedEvent = $eventModel->deleteOne(["ID" => $UID]);
-        if (!$deletedEvent) {
-            return $res->status(400)->redirect("/event", ["error" => "Deletion Failed"]);
+        // delete the course
+        $deletedCourse = $courseModel->deleteOne(["ID" => $UID]);
+        if (!$deletedCourse) {
+            return $res->status(400)->redirect("/course", ["error" => "Deletion Failed"]);
         }
 
-        $res->status(200)->redirect("/event", ["success" => "Deleted Successfully"]);
+        $res->status(200)->redirect("/course", ["success" => "Deleted Successfully"]);
 
 
     }
