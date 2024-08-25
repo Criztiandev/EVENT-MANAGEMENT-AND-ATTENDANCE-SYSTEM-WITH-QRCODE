@@ -53,6 +53,7 @@ class EventController
 
             }, $events);
 
+
             $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["events" => $transformed_event]);
 
         } catch (\Exception $e) {
@@ -119,8 +120,31 @@ class EventController
     public static function renderSessiion(Request $req, Response $res)
     {
         try {
+            $attendanceModel = new Model("Attendance");
+            $event_id = $req->query["id"];
 
-            $res->status(200)->render(self::BASE_URL . "/pages/session-start.php");
+            // get all the attendance related
+            $attendance_related = $attendanceModel->find(["EVENT_ID" => $event_id]);
+
+            $transformed_attendees_list = array_map(function ($items) {
+                $studentModel = new Model("STUDENT");
+                $accountModel = new Model("USERS");
+
+                $studentCredentials = $studentModel->findOne(["STUDENT_ID" => $items["STUDENT_ID"]]);
+                $accountCredentials = $accountModel->findOne(["ID" => $studentCredentials["USER_ID"]], ["select" => "FIRST_NAME, LAST_NAME"]);
+
+
+                return [
+                    ...$items,
+                    "STUDENT_NAME" => $accountCredentials["FIRST_NAME"] . " " . $accountCredentials["LAST_NAME"],
+                ];
+
+
+            }, $attendance_related);
+
+
+
+            $res->status(200)->render(self::BASE_URL . "/pages/session-start.php", ["EVENT_ID" => $event_id, "student_list" => $transformed_attendees_list]);
         } catch (\Exception $e) {
             $res->status(500)->json(["error" => "Failed to fetch Events: " . $e->getMessage()]);
         }

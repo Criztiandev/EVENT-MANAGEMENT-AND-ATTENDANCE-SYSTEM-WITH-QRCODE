@@ -17,7 +17,8 @@
   ],
   "require": {
     "ramsey/uuid": "^4.7",
-    "symfony/dotenv": "^7.1"
+    "symfony/dotenv": "^7.1",
+    "chillerlan/php-qrcode": "^5.0"
   },
   "scripts": {
     "dev": "src/server.php"

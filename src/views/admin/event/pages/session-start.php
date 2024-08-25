@@ -7,8 +7,8 @@ require from("views/helper/partials/sidebar.partials.php");
 
 
 <main class="p-4 md:ml-64 h-auto pt-20 overflow-hidden">
-    <section class="">
-        <div class=" h-full">
+    <section class="flex w-full gap-4">
+        <div class="w-full h-full">
             <div
                 class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden overflow-y-scroll h-full border">
                 <div
@@ -19,15 +19,27 @@ require from("views/helper/partials/sidebar.partials.php");
                     </div>
                     <div
                         class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-                        <a href="/event/create" type="button"
+
+                        <a href="/event/session-print?id=<?= $EVENT_ID ?>" type="button"
                             class="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                             <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <path clip-rule="evenodd" fill-rule="evenodd"
                                     d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                             </svg>
-                            Start Event
+                            Print
                         </a>
+                        <a href="/event/session-end?id=<?= $EVENT_ID ?>" type="button"
+                            class="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                            <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path clip-rule="evenodd" fill-rule="evenodd"
+                                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                            </svg>
+                            End Event
+                        </a>
+
+
 
                     </div>
                 </div>
@@ -35,82 +47,43 @@ require from("views/helper/partials/sidebar.partials.php");
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th scope="col" class="px-4 py-3">Name</th>
-                                <th scope="col" class="px-4 py-3">Venue</th>
-                                <th scope="col" class="px-4 py-3">Date</th>
-                                <th scope="col" class="px-4 py-3">time</th>
-                                <th scope="col" class="px-4 py-3 text-center">
-                                    <span>Actions</span>
-                                </th>
+                                <th scope="col" class="px-4 py-3">ID</th>
+                                <th scope="col" class="px-4 py-3">NAME</th>
+                                <th scope="col" class="px-4 py-3">Check In AM</th>
+                                <th scope="col" class="px-4 py-3">Check Out AM</th>
+
+                                <th scope="col" class="px-4 py-3">Check In PM</th>
+                                <th scope="col" class="px-4 py-3">Check Out PM</th>
+
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($events as $items): ?>
+                            <?php foreach ($student_list as $items): ?>
                                 <tr class="border-b dark:border-gray-700">
                                     <th scope="row"
                                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <?= $items["NAME"] ?>
+                                        <?= $items["STUDENT_ID"] ?>
                                     </th>
                                     <td class="px-4 py-3">
-                                        <?= $items["LOCATION"] ?>
+                                        <?= $items["STUDENT_NAME"] ?>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <?= $items["START_DATE"] ?>
-                                        <?= $items["END_DATE"] ?>
+                                        <?= $items["CHECK_IN_TIME_AM"] ?? "Not Available" ?>
                                     </td>
+
                                     <td class="px-4 py-3">
-                                        <?= $items["START_TIME"] ?>
-                                        <?= $items["END_TIME"] ?>
+                                        <?= $items["CHECK_OUT_TIME_AM"] ?? "Not Available" ?>
                                     </td>
-                                    <td class=" flex justify-center items-center">
 
-                                        <a href="/event/session-start?id=<?= $items["ID"] ?>" type="button"
-                                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                            <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18'
-                                                viewBox='0 0 24 24'>
-                                                <title>play_fill</title>
-                                                <g id="play_fill" fill='none' fill-rule='evenodd'>
-                                                    <path
-                                                        d='M24 0v24H0V0zM12.593 23.258l-.011.002-.071.035-.02.004-.014-.004-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01-.017.428.005.02.01.013.104.074.015.004.012-.004.104-.074.012-.016.004-.017-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113-.013.002-.185.093-.01.01-.003.011.018.43.005.012.008.007.201.093c.012.004.023 0 .029-.008l.004-.014-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014-.034.614c0 .012.007.02.017.024l.015-.002.201-.093.01-.008.004-.011.017-.43-.003-.012-.01-.01z' />
-                                                    <path fill='currentColor'
-                                                        d='M5.669 4.76a1.469 1.469 0 0 1 2.04-1.177c1.062.454 3.442 1.533 6.462 3.276 3.021 1.744 5.146 3.267 6.069 3.958.788.591.79 1.763.001 2.356-.914.687-3.013 2.19-6.07 3.956-3.06 1.766-5.412 2.832-6.464 3.28-.906.387-1.92-.2-2.038-1.177-.138-1.142-.396-3.735-.396-7.237 0-3.5.257-6.092.396-7.235' />
-                                                </g>
-                                            </svg>
-                                            <span class="sr-only">Icon description</span>
-                                        </a>
-
-
-                                        <a href="/event/update?id=<?= $items["ID"] ?>" type="button"
-                                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                            <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18'
-                                                viewBox='0 0 24 24'>
-                                                <title>edit_2_fill</title>
-                                                <g id="edit_2_fill" fill='none' fill-rule='nonzero'>
-                                                    <path
-                                                        d='M24 0v24H0V0h24ZM12.593 23.258l-.011.002-.071.035-.02.004-.014-.004-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01-.017.428.005.02.01.013.104.074.015.004.012-.004.104-.074.012-.016.004-.017-.017-.427c-.002-.01-.009-.017-.017-.018Zm.265-.113-.013.002-.185.093-.01.01-.003.011.018.43.005.012.008.007.201.093c.012.004.023 0 .029-.008l.004-.014-.034-.614c-.003-.012-.01-.02-.02-.022Zm-.715.002a.023.023 0 0 0-.027.006l-.006.014-.034.614c0 .012.007.02.017.024l.015-.002.201-.093.01-.008.004-.011.017-.43-.003-.012-.01-.01-.184-.092Z' />
-                                                    <path fill='currentColor'
-                                                        d='m10.756 6.17 7.07 7.071-7.173 7.174a2 2 0 0 1-1.238.578L9.239 21H4.006c-.52 0-.949-.394-1.004-.9l-.006-.11v-5.233a2 2 0 0 1 .467-1.284l.12-.13 7.173-7.174Zm3.14-3.14a2 2 0 0 1 2.701-.117l.127.117 4.243 4.243a2 2 0 0 1 .117 2.7l-.117.128-1.726 1.726-7.07-7.071 1.725-1.726Z' />
-                                                </g>
-                                            </svg>
-                                            <span class="sr-only">Icon description</span>
-                                        </a>
-
-                                        <button type="button" data-delete-id="<?= $items["ID"] ?>"
-                                            class="delete-modal-btn text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                            <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18'
-                                                viewBox='0 0 24 24'>
-                                                <title>delete_2_fill</title>
-                                                <g id="delete_2_fill" fill='none' fill-rule='evenodd'>
-                                                    <path
-                                                        d='M24 0v24H0V0h24ZM12.593 23.258l-.011.002-.071.035-.02.004-.014-.004-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01-.017.428.005.02.01.013.104.074.015.004.012-.004.104-.074.012-.016.004-.017-.017-.427c-.002-.01-.009-.017-.017-.018Zm.265-.113-.013.002-.185.093-.01.01-.003.011.018.43.005.012.008.007.201.093c.012.004.023 0 .029-.008l.004-.014-.034-.614c-.003-.012-.01-.02-.02-.022Zm-.715.002a.023.023 0 0 0-.027.006l-.006.014-.034.614c0 .012.007.02.017.024l.015-.002.201-.093.01-.008.004-.011.017-.43-.003-.012-.01-.01-.184-.092Z' />
-                                                    <path fill='currentColor'
-                                                        d='M14.28 2a2 2 0 0 1 1.897 1.368L16.72 5H20a1 1 0 1 1 0 2l-.003.071-.867 12.143A3 3 0 0 1 16.138 22H7.862a3 3 0 0 1-2.992-2.786L4.003 7.07A1.01 1.01 0 0 1 4 7a1 1 0 0 1 0-2h3.28l.543-1.632A2 2 0 0 1 9.721 2h4.558ZM9 10a1 1 0 0 0-.993.883L8 11v6a1 1 0 0 0 1.993.117L10 17v-6a1 1 0 0 0-1-1Zm6 0a1 1 0 0 0-1 1v6a1 1 0 1 0 2 0v-6a1 1 0 0 0-1-1Zm-.72-6H9.72l-.333 1h5.226l-.334-1Z' />
-                                                </g>
-                                            </svg>
-                                            <span class="sr-only">Icon description</span>
-                                        </button>
-
+                                    <td class="px-4 py-3">
+                                        <?= $items["CHECK_IN_TIME_PM"] ?? "Not Available" ?>
                                     </td>
+
+                                    <td class="px-4 py-3">
+                                        <?= $items["CHECK_OUT_TIME_PM"] ?? "Not Available" ?>
+                                    </td>
+
+
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -173,8 +146,71 @@ require from("views/helper/partials/sidebar.partials.php");
                 </nav>
             </div>
         </div>
+
+        <div class="flex max-w-[500px] min-w-[300px] w-full border flex flex-col">
+            <div class="w-full border">
+                <div id="qr-reader" class="w-full"></div>
+            </div>
+
+        </div>
+
     </section>
+
+
 </main>
+
+
+<script>
+    $(document).ready(function () {
+        const statusBanner = $("#sticky-banner");
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        statusBanner.addClass("hidden");
+
+        let lastScanTime = 0;
+        const scanCooldown = 500; // 5 seconds cooldown
+
+        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+            const currentTime = new Date().getTime();
+
+            if (currentTime - lastScanTime < scanCooldown) {
+                console.log("Scan too soon, please wait.");
+                return;
+            }
+
+            lastScanTime = currentTime;
+
+            // Temporarily stop scanning
+            html5QrCode.pause();
+
+            $.ajax({
+                url: '/attendance/create',
+                method: 'POST',
+                data: { "STUDENT_ID": decodedText, "EVENT_ID": <?= json_encode($EVENT_ID) ?> },
+                success: function (response) {
+                    $("#qr-reader-status").html(`<div>Success</div>`);
+                    statusBanner.removeClass("hidden");
+                    showToast(response?.message || "Attendance Successfully", "linear-gradient(to right,#27ae60, #2ecc71)");
+                    setTimeout(() => {
+                        statusBanner.addClass("hidden");
+                        location.reload()
+                    }, scanCooldown);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error saving data:', error);
+                    showToast("Error: " + (xhr.responseJSON?.message || "Failed to record attendance"), "linear-gradient(to right, #c0392b, #e74c3c)");
+                    // Resume scanning after error
+                    setTimeout(() => {
+                        html5QrCode.resume();
+                    }, scanCooldown);
+                }
+            });
+        };
+
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+        html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
+    });
+</script>
 
 <?php display("views/helper/components/ui/DeleteModal.php", ["route" => "/event/delete"]) ?>
 

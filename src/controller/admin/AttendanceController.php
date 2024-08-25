@@ -2,6 +2,7 @@
 
 namespace controller\admin;
 
+use DateTime;
 use lib\Mangoose\Model;
 use lib\Router\classes\Request;
 use lib\Router\classes\Response;
@@ -102,41 +103,133 @@ class AttendanceController
      */
     public static function createAttendance(Request $req, Response $res)
     {
-        $credentials = $req->body;
+        $studentModel = new Model("STUDENT");
         $attendanceModel = new Model("ATTENDANCE");
+        $eventModel = new Model("EVENT");
 
-        $existingAttendance = $attendanceModel->findOne(["NAME" => $credentials["NAME"]]);
+        $STUDENT_ID = $req->body["STUDENT_ID"];
+        $EVENT_ID = $req->body["EVENT_ID"];
 
-        if ($existingAttendance) {
-            return $res->status(400)->redirect("/attendance/create", ["error" => "Attendance already exists"]);
+        // Validate student existence
+        $existStudent = $studentModel->findOne(["STUDENT_ID" => $STUDENT_ID]);
+        if (!$existStudent) {
+            $res->status(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Student does not exist'
+            ]);
+            return;
         }
 
-        // Check if the dates are in the past or exceed 7 days in the future
-        $currentDate = new \DateTime();
-        $startDate = new \DateTime($credentials["START_DATE"]);
-        $endDate = new \DateTime($credentials["END_DATE"]);
-        $maxFutureDate = (new \DateTime())->modify('+7 days');
-
-        if ($startDate < $currentDate || $endDate < $currentDate) {
-            return $res->status(400)->redirect("/attendance/create", ["error" => "Attendance dates cannot be in the past"]);
+        // Validate event existence
+        $existEvent = $eventModel->findOne(["ID" => $EVENT_ID]);
+        if (!$existEvent) {
+            $res->status(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Event does not exist'
+            ]);
+            return;
         }
 
-        if ($startDate > $maxFutureDate || $endDate > $maxFutureDate) {
-            return $res->status(400)->redirect("/attendance/create", ["error" => "Attendance dates cannot exceed 7 days in the future"]);
-        }
+        // Set the timezone to Philippines
+        date_default_timezone_set('Asia/Manila');
 
-        $UID = Uuid::uuid4()->toString();
-        $createdAttendance = $attendanceModel->createOne([
-            "ID" => $UID,
-            ...$credentials,
-            "STATUS" => "INACTIVE"
+        $currentDateTime = new DateTime();
+        $currentTime = $currentDateTime->format('g:i A');
+        $isAM = ($currentTime < '12:00:00');
+
+
+        // Check if attendance record exists for this student and event
+        $existingAttendance = $attendanceModel->findOne([
+            "STUDENT_ID" => $STUDENT_ID,
+            "EVENT_ID" => $EVENT_ID
         ]);
 
-        if (!$createdAttendance) {
-            return $res->status(400)->redirect("/attendance/create", ["error" => "Creating attendance went wrong"]);
+
+        if ($existingAttendance) {
+            // Update existing record
+            $updateData = [];
+            if ($isAM) {
+                if (empty($existingAttendance['CHECK_IN_TIME_AM'])) {
+                    $updateData['CHECK_IN_TIME_AM'] = $currentTime;
+                } elseif (empty($existingAttendance['CHECK_OUT_TIME_AM'])) {
+                    $updateData['CHECK_OUT_TIME_AM'] = $currentTime;
+                } else {
+                    $res->status(400);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'AM check-in and check-out already recorded'
+                    ]);
+                    return;
+                }
+            } else {
+                if (empty($existingAttendance['CHECK_IN_TIME_PM'])) {
+                    $updateData['CHECK_IN_TIME_PM'] = $currentTime;
+                } elseif (empty($existingAttendance['CHECK_OUT_TIME_PM'])) {
+                    $updateData['CHECK_OUT_TIME_PM'] = $currentTime;
+                } else {
+                    $res->status(400);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'PM check-in and check-out already recorded'
+                    ]);
+                    return;
+                }
+            }
+
+            $attendanceResult = $attendanceModel->updateOne(
+                $updateData,
+                ["ID" => $existingAttendance['ID']],
+            );
+
+
+        } else {
+            // Create new attendance record
+            $attendanceData = [
+                'ID' => Uuid::uuid4()->toString(), // Or however you generate unique IDs
+                'STUDENT_ID' => $STUDENT_ID,
+                'EVENT_ID' => $EVENT_ID
+            ];
+
+            if ($isAM) {
+                $attendanceData['CHECK_IN_TIME_AM'] = $currentTime;
+            } else {
+                $attendanceData['CHECK_IN_TIME_PM'] = $currentTime;
+            }
+            $attendanceResult = $attendanceModel->createOne($attendanceData);
         }
 
-        return $res->status(200)->redirect("/attendance/create", ["success" => "Attendance created successfully"]);
+        if ($attendanceResult) {
+            $res->status(200);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Attendance recorded successfully',
+                'student' => [
+                    'STUDENT_ID' => $existStudent['STUDENT_ID'],
+                    'STUDENT_NAME' => $existStudent['STUDENT_NAME'],
+                ],
+                'event' => [
+                    'EVENT_ID' => $existEvent['EVENT_ID'],
+                    'EVENT_NAME' => $existEvent['EVENT_NAME'],
+                ],
+                'attendance' => [
+                    'TIME' => $currentTime,
+                    'PERIOD' => $isAM ? 'AM' : 'PM',
+                    'TYPE' => $existingAttendance ?
+                        ($isAM ?
+                            (empty($existingAttendance['CHECK_OUT_TIME_AM']) ? 'CHECK_OUT' : 'CHECK_IN') :
+                            (empty($existingAttendance['CHECK_OUT_TIME_PM']) ? 'CHECK_OUT' : 'CHECK_IN')
+                        ) : 'CHECK_IN'
+                ]
+            ]);
+        } else {
+            $res->status(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to record attendance'
+            ]);
+        }
     }
 
     /**

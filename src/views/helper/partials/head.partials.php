@@ -87,6 +87,8 @@ $config = Express::getInstance()->getConfig();
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
 
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 
 <body>

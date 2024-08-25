@@ -4,3 +4,6 @@
 4. Update is required all the details, we need to updatge only what is needed
 5. uPDATE THE MONGOOSE
 6. ADD ERROR HANDLERS
+7. doest suppoer the json
+
+copy the mongoose in mangoose

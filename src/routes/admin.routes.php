@@ -29,8 +29,10 @@ $router->delete("/event/delete", fn(Request $req, Response $res) => EventControl
 
 // Attendance
 $router->get("/attendance", fn(Request $req, Response $res) => AttendanceController::renderScreen($req, $res));
-$router->get("/attendance/create", fn(Request $req, Response $res) => AttendanceController::renderCreatePage($req, $res));
 $router->get("/attendance/update", fn(Request $req, Response $res) => AttendanceController::renderUpdatePage($req, $res));
+
+$router->post("/attendance/create", fn(Request $req, Response $res) => AttendanceController::createAttendance($req, $res));
+
 
 
 // Student
