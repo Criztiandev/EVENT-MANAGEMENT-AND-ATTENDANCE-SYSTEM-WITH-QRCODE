@@ -7,3 +7,7 @@
 7. doest suppoer the json
 
 copy the mongoose in mangoose
+
+
+deletiong of course bug there is no department
+press ender bug it save the data

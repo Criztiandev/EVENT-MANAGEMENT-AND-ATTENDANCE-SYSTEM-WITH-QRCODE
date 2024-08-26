@@ -13,7 +13,7 @@ use lib\Router\Express;
 
 $router = Express::Router();
 
-$router->get("/", fn(Request $req, Response $res) => AdminController::renderDashboard($req, $res));
+$router->get("/", fn(Request $req, Response $res) => EventController::renderScreen($req, $res));
 
 
 // Events
@@ -30,7 +30,6 @@ $router->delete("/event/delete", fn(Request $req, Response $res) => EventControl
 $router->post("/event/session-start", fn(Request $req, Response $res) => EventController::startEvent($req, $res));
 $router->post("/event/session-end", fn(Request $req, Response $res) => EventController::endEvent($req, $res));
 $router->get("/event/session-print", fn(Request $req, Response $res) => EventController::printEvent($req, $res));
-
 
 // Attendance
 $router->get("/attendance", fn(Request $req, Response $res) => AttendanceController::renderScreen($req, $res));

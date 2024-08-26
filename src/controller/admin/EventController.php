@@ -2,9 +2,19 @@
 
 namespace controller\admin;
 
+use Endroid\QrCode\Color\Color;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Label\Label;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\Writer\SvgWriter;
+use Exception;
 use lib\Mangoose\Model;
 use lib\Router\classes\Request;
 use lib\Router\classes\Response;
+use lib\Router\Express;
 use Ramsey\Uuid\Rfc4122\UuidV4;
 use Ramsey\Uuid\Uuid;
 
@@ -300,6 +310,95 @@ class EventController
         dd($event_credentials);
 
     }
+
+    public static function joinEvent(Request $req, Response $res)
+    {
+        $EVENT_ID = $req->query["id"];
+        $studentModel = new Model("STUDENT");
+        $eventModel = new Model("EVENT");
+        $UID = Express::Session()->get("UID");
+
+        $event_credentials = $eventModel->findOne(["ID" => $EVENT_ID, "STATUS" => "ACTIVE"]);
+        if (!$event_credentials) {
+            return $res->status(400)->redirect("/" . $EVENT_ID, ["error" => "Event doesn't exist"]);
+        }
+
+        $credentials = $studentModel->findOne(["USER_ID" => $UID]);
+        if (!$credentials) {
+            return $res->status(400)->redirect("/", ["error" => "Student doesnt exist"]);
+        }
+
+        // Generate a unique join link
+        $joinLink = "https://yourdomain.com/join-event/" . $EVENT_ID . "?user=" . $UID;
+
+        $writer = new SvgWriter();
+
+        // Generate QR code
+        $qrCode = QrCode::create($credentials["STUDENT_ID"])
+            ->setEncoding(new Encoding('UTF-8'))
+            ->setErrorCorrectionLevel(ErrorCorrectionLevel::Low)
+            ->setSize(300)
+            ->setMargin(10)
+            ->setRoundBlockSizeMode(RoundBlockSizeMode::Margin)
+            ->setForegroundColor(new Color(0, 0, 0))
+            ->setBackgroundColor(new Color(255, 255, 255));
+
+        $label = Label::create('Scan to join event')
+            ->setTextColor(new Color(255, 0, 0));
+
+        $result = $writer->write($qrCode, null, $label);
+
+        // Prepare directory and save the SVG content to a file
+        $directory = __DIR__ . "/../../assets/qr_codes/events";
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        if (!is_writable($directory)) {
+            throw new Exception("Directory is not writable: " . $directory);
+        }
+
+        $qrCodePath = $directory . "/" . $EVENT_ID . "_user_" . $UID . ".svg";
+        error_log("Attempting to save QR code to: " . $qrCodePath);
+
+
+        $svgContent = $result->getString();
+        if (file_put_contents($qrCodePath, $svgContent) === false) {
+            throw new Exception("Failed to write QR code to file: " . $qrCodePath);
+        }
+
+
+        $res->status(200)->redirect("/event/download?id=" . $EVENT_ID . "&UID=" . $UID, [
+            "message" => "Event joined successfully",
+            "qr_code_path" => $qrCodePath,
+            "join_link" => $joinLink
+        ]);
+    }
+
+    public static function downloadQrCode(Request $req, Response $res)
+    {
+        $EVENT_ID = $req->query["id"];
+        $UID = Express::Session()->get("UID");
+
+
+        $directory = __DIR__ . "/../../assets/qr_codes/events";
+        $qrCodePath = $directory . "/" . $EVENT_ID . "_user_" . $UID . ".svg";
+
+        if (file_exists($qrCodePath)) {
+            $fileName = "event_" . $EVENT_ID . "_qr_code.svg";
+
+            $res->header("Content-Type", "image/svg+xml");
+            $res->header("Content-Disposition", "attachment; filename=\"" . $fileName . "\"");
+            $res->header("Content-Length", filesize($qrCodePath));
+
+            readfile($qrCodePath);
+            exit;
+        } else {
+            $res->status(200)->redirect("/event", ["error" => "Something went wrong"]);
+        }
+    }
+
+
 
 
 

@@ -11,16 +11,17 @@
   },
   "authors": [
     {
-      "name": "criztiandev",
-      "email": "criztiandev@gmail.com"
+      "name": "unknown",
+      "email": "unknown@gmail.com"
     }
   ],
   "require": {
     "ramsey/uuid": "^4.7",
     "symfony/dotenv": "^7.1",
-    "chillerlan/php-qrcode": "^5.0"
+    "chillerlan/php-qrcode": "^5.0",
+    "endroid/qr-code": "^5.0"
   },
   "scripts": {
-    "dev": "src/server.php"
+    "dev": " php -S localhost:4000 -t public    "
   }
 }

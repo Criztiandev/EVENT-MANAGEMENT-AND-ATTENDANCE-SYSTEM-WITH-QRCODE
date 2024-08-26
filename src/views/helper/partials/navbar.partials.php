@@ -5,8 +5,7 @@ $credentials = Express::Session()->get("credentials");
 
 ?>
 
-<nav
-    class=" border-b border-gray-200 px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50 bg-white">
+<nav class="bg-[#535c68] text-white px-4 py-2.5 fixed left-0 right-0 top-0 z-50">
     <div class="flex items-center justify-between">
         <div class="flex justify-start items-center">
             <button data-drawer-target="drawer-navigation" data-drawer-toggle="drawer-navigation"
