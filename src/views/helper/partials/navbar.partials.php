@@ -28,7 +28,7 @@ $credentials = Express::Session()->get("credentials");
 
             <!-- Logo -->
             <a href="/" class="flex items-center justify-between mr-4">
-                <span class="self-center text-2xl font-semibold whitespace-nowrap  ">DEBESMSCAT EVENT MANAGEMENT</span>
+                <span class="self-center text-2xl font-semibold whitespace-nowrap  ">QR CODE-BASED EVENT ATTENDANCE MONITORING SYSTEM V.2</span>
             </a>
         </div>
 

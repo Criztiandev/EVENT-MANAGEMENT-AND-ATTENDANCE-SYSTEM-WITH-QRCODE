@@ -55,9 +55,9 @@ class AuthController
             $res->status(400)->redirect("/", ["error" => "User doesnt exist"]);
         }
 
-        if (!$user_exist && !password_verify($password, $user_exist["PASSWORD"])) {
-            $res->status(400)->redirect("/", ["error" => "Password is in correct"]);
-        }
+        // if (!$user_exist && !password_verify($password, $user_exist["PASSWORD"])) {
+        //     $res->status(400)->redirect("/", ["error" => "Password is in correct"]);
+        // }
 
         // create session
         Express::Session()->insert("UID", $user_exist["ID"]);
