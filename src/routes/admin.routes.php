@@ -7,6 +7,7 @@ use controller\admin\EventController;
 use controller\admin\OperatorController;
 use controller\admin\StudentController;
 use controller\admin\ManageUserController;
+use controller\admin\OrganizationController;
 use lib\Router\classes\Request;
 use lib\Router\classes\Response;
 use lib\Router\Express;
@@ -40,7 +41,6 @@ $router->get("/attendance/update", fn(Request $req, Response $res) => Attendance
 $router->post("/attendance/create", fn(Request $req, Response $res) => AttendanceController::createAttendance($req, $res));
 
 
-
 // Student
 $router->get("/student", fn(Request $req, Response $res) => StudentController::renderScreen($req, $res));
 $router->get("/student/create", fn(Request $req, Response $res) => StudentController::renderCreatePage($req, $res));
@@ -56,10 +56,23 @@ $router->get("/operator/create", fn(Request $req, Response $res) => OperatorCont
 $router->get("/operator/update", fn(Request $req, Response $res) => OperatorController::renderUpdatePage($req, $res));
 $router->get("/operator/delete", fn(Request $req, Response $res) => OperatorController::renderUpdatePage($req, $res));
 
-
 // operator Actions
 $router->post("/operator/create", fn(Request $req, Response $res) => OperatorController::createOperator($req, $res));
 $router->delete("/operator/delete", fn(Request $req, Response $res) => OperatorController::deleteOperator($req, $res));
+
+
+// organization
+$router->get("/organization", fn(Request $req, Response $res) => OrganizationController::renderScreen($req, $res));
+$router->get("/organization/create", fn(Request $req, Response $res) => OrganizationController::renderCreatePage($req, $res));
+$router->get("/organization/position/create", fn(Request $req, Response $res) => OrganizationController::renderCreatePositionPage($req, $res));
+$router->get("/organization/update", fn(Request $req, Response $res) => OrganizationController::renderUpdatePage($req, $res));
+$router->get("/organization/delete", fn(Request $req, Response $res) => OrganizationController::renderUpdatePage($req, $res));
+
+// organization Actions
+$router->post("/organization/create", fn(Request $req, Response $res) => OrganizationController::createOrganization($req, $res));
+$router->post("/organization/position/create", fn(Request $req, Response $res) => OrganizationController::createPosition($req, $res));
+$router->delete("/organization/delete", fn(Request $req, Response $res) => OrganizationController::deleteOrganization($req, $res));
+
 
 
 

@@ -39,15 +39,16 @@ class CourseController
 
             $transformed_course = array_map(function ($items) {
                 $departmentModel = new Model("DEPARTMENT");
-                $departmentName = $departmentModel->findOne(["ID" => $items["DEPARTMENT_ID"]], ["select" => "NAME"]);
+                $departmentName = $departmentModel->findOne(["ID" => $items["DEPARTMENT_ID"], "STATUS" => "ACTIVE"], ["select" => "NAME"]);
 
                 return [
+                    "ID" => $items["ID"],
                     "NAME" => $items["NAME"],
                     "DEPARTMENT" => $departmentName["NAME"],
                     "STATUS" => $items["STATUS"]
                 ];
             }, $courses);
-
+            
             $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["courses" => $transformed_course]);
 
         } catch (\Exception $e) {
@@ -144,7 +145,7 @@ class CourseController
             "ID" => $UID,
             "NAME" => $credentials["NAME"],
             "DEPARTMENT_ID" => $credentials["DEPARTMENT"],
-            "STATUS" => "INACTIVE"
+            "STATUS" => "ACTIVE"
         ]);
 
         if (!$createdCourse) {
