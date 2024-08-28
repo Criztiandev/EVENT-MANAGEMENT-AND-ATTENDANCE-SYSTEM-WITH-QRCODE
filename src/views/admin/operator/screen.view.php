@@ -55,10 +55,10 @@ require from("views/helper/partials/sidebar.partials.php");
                                         <?= $items["FULL_NAME"] ?>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <?= $items["ORGANIZATION"] ?>
+                                        <?= $items["ORGANIZATION_NAME"] ?>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <?= $items["POSITION"] ?>
+                                        <?= $items["POSITION_NAME"] ?>
                                     </td>
 
                                     <td class=" flex justify-center items-center">

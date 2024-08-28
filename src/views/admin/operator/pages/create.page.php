@@ -60,7 +60,7 @@ require from("views/helper/partials/sidebar.partials.php");
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gender</label>
                         <select name="GENDER" id="GENDER"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            required>
+                            required="">
                             <option disabled selected>Select your Gender</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
@@ -106,7 +106,7 @@ require from("views/helper/partials/sidebar.partials.php");
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Organization</label>
                         <select name="ORGANIZATION_ID" id="ORGANIZATION"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            required>
+                            required="">
                             <option disabled selected>Select your Organization</option>
                             <?php foreach ($organization_list as $organization): ?>
                                 <option value="<?= $organization["ID"] ?>"><?= $organization["NAME"] ?></option>
@@ -120,8 +120,8 @@ require from("views/helper/partials/sidebar.partials.php");
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Position</label>
                         <select name="POSITION_ID" id="POSITION"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            required>
-                            <option disabled selected>Select your Position</option>
+                            required="">
+                            <option disabled selected value="">Select your Position</option>
                             <?php foreach ($position_list as $position): ?>
                                 <option data-organization="<?= $position["ORGANIZATION_ID"] ?>" value="<?= $position["ID"] ?>"><?= $position["NAME"] ?></option>
                             <?php endforeach; ?>
@@ -142,23 +142,20 @@ require from("views/helper/partials/sidebar.partials.php");
 <script>
 $(document).ready(function(){
     const organization = $("#ORGANIZATION");
-    const positionSelection = $("#POSITION");
 
     organization.on("change", function(event){
         const selectedOrganization = $(this).val();
         const positionOptions = $('#POSITION option');
+    const positionSelection = $("#POSITION");
 
         positionOptions.hide();
-
+        positionSelection.val("");  
 
         if(selectedOrganization){
-
 
             positionOptions.filter(function() {
                 return $(this).data('organization') == selectedOrganization;
             }).show();
-
-            console.log(positionOptions);
 
         } else {
             positionOptions.show();

@@ -1,3 +1,4 @@
+<?php $key = isset($key) ? $key : "" ?>
 <div id="modal" hidden class="fixed top-0 left-0 w-screen h-screen" style="z-index: 999">
 
     <!-- Backdrop -->
@@ -9,7 +10,7 @@
             <div class="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
 
                 <!-- X Buton -->
-                <button type="button" id="close-btn"
+                <button type="button" id="cancel-btn"
                     class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg">
@@ -57,6 +58,8 @@
         const key = <?php echo json_encode($key); ?>;
         const route = <?php echo json_encode($route ?? null); ?>;
 
+        const triggerKey = key === "" ? ".delete-modal-btn" : `.${key}`
+
         // Select modal and delete form elements
         const $modal = $('#modal');
         const deleteForm = $("#delete-form");
@@ -71,7 +74,7 @@
         }
 
         // Event handler for opening the modal
-        $(document).on('click', `.${key || "delete-modal-btn"}`, function () {
+        $(document).on('click', triggerKey, function () {
             const currentRoute = route;
 
             // Get the UID from the clicked element

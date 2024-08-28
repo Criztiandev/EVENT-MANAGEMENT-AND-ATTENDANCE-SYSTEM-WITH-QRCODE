@@ -35,28 +35,28 @@ class OperatorController
     {
         try {
             $operatorModel = self::getBaseModel();
-            $operators = $operatorModel->find();
 
-            $transformed_operators = [];
 
-            foreach ($operators as $details) {
-                $accountModel = new Model("USERS");
-                $user = $accountModel->findOne(
-                    ["ID" => $details["USER_ID"]],
-                    ["select" => "FIRST_NAME, LAST_NAME"]
-                );
+            $operator_list = $operatorModel->find([]);
 
-                $fullName = $user ? $user["FIRST_NAME"] . " " . $user["LAST_NAME"] : "Unknown";
 
-                $transformed_operators[] = [
+            $transformed_operators = array_map(function ($operator) {
+                $accountCredentials = (new Model("USERS"))->findOne(["ID" => $operator["USER_ID"]], ["select" => "FIRST_NAME, LAST_NAME"]);
+                $organizationCredentials = (new Model("ORGANIZATION"))->findOne(["ID" => $operator["ORGANIZATION_ID"]], ["select" => "NAME"]);
+                $positionCredentials = (new Model("POSITION"))->findOne(["ID" => $operator["POSITION_ID"]], ["select" => "NAME"]);
+
+                $fullName = $accountCredentials ? $accountCredentials["FIRST_NAME"] . " " . $accountCredentials["LAST_NAME"] : "Unknown";
+
+
+                return [
+                    ...$operator,
                     "FULL_NAME" => $fullName,
-                    ...$details
+                    "ORGANIZATION_NAME" => $organizationCredentials["NAME"],
+                    "POSITION_NAME" => $positionCredentials["NAME"],
                 ];
-            }
-
+            }, $operator_list);
 
             $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["operators" => $transformed_operators]);
-
         } catch (\Exception $e) {
             $res->status(500)->json(["error" => "Failed to fetch Operators: " . $e->getMessage()]);
         }
@@ -70,7 +70,7 @@ class OperatorController
      * @return void
      */
     public static function renderCreatePage(Request $req, Response $res)
-    {   
+    {
         $organization_list = (new Model("ORGANIZATION"))->find(["DELETE_STATUS" => "ACTIVE"]);
         $position_list = (new Model("POSITION"))->find(["DELETE_STATUS" => "ACTIVE"]);
 
@@ -113,9 +113,6 @@ class OperatorController
                     "roles" => self::ROLES
                 ]
             );
-
-
-
         } catch (\Exception $e) {
             $res->status(500)->json(["error" => "Failed to fetch users: " . $e->getMessage()]);
         }
@@ -138,6 +135,7 @@ class OperatorController
         $operatorModel = new Model("OPERATOR");
         $accountModel = new Model("USERS");
 
+
         // check if the email exist
         $existingAccount = $accountModel->findOne(["#or" => ["EMAIL" => $credentials["EMAIL"], "PHONE_NUMBER" => $credentials["PHONE_NUMBER"]]]);
 
@@ -145,7 +143,7 @@ class OperatorController
             $res->status(400)->redirect("/operator/create", ["error" => "Operator Already exist"]);
         }
 
-        $existingOperator = $operatorModel->findOne(["OPERATOR_ID" => $credentials["OPERATOR_ID"]]);
+        $existingOperator = $operatorModel->findOne(["#or" => ["OPERATOR_ID" => $credentials["OPERATOR_ID"], "ORGANIZATION_ID" => $credentials["ORGANIZATION_ID"], "POSITION_ID" => $credentials["POSITION_ID"]]]);
 
         if ($existingOperator) {
             $res->status(400)->redirect("/operator/create", ["error" => "Operator Already exist"]);
@@ -153,7 +151,6 @@ class OperatorController
 
         $hashed_password = password_hash($credentials["PASSWORD"], PASSWORD_BCRYPT, ["cost" => 10]);
 
-        // create the account
         $accountCredentials = $accountModel->createOne([
             "ID" => $UID,
             "FIRST_NAME" => $credentials["FIRST_NAME"],
@@ -174,17 +171,15 @@ class OperatorController
             "ID" => Uuid::uuid4()->toString(),
             "USER_ID" => $UID,
             "OPERATOR_ID" => $credentials["OPERATOR_ID"],
-            "ORGANIZATION" => $credentials["ORGANIZATION"],
-            "POSITION" => $credentials["POSITION"],
+            "ORGANIZATION_ID" => $credentials["ORGANIZATION_ID"],
+            "POSITION_ID" => $credentials["POSITION_ID"],
         ]);
 
 
         if (!$operatorCredentials) {
             $res->status(400)->redirect("/operator/create", ["error" => "Create Operator Details Failed"]);
         }
-
-
-        return $res->status(200)->redirect("/operator/create", ["success" => "Operator created successfully"]);
+        return $res->status(200)->redirect("/operator", ["success" => "Operator created successfully"]);
     }
 
     /**
@@ -240,8 +235,6 @@ class OperatorController
         }
 
         $res->status(200)->redirect("/operator", ["success" => "Deleted Successfully"]);
-
-
     }
 
 
