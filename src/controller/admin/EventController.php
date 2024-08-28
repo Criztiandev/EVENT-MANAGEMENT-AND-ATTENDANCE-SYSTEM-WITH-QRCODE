@@ -82,11 +82,16 @@ class EventController
     {
         $departmentModel = new Model("DEPARTMENT");
         $courseModel = new Model("COURSE");
-        $courseCredentials = $courseModel->find([]);
+        $organizationModel = new Model("ORGANIZATION");
+
         $departmentCredentials = $departmentModel->find([]);
+        $courseCredentials = $courseModel->find([]);
+        $organization_list = $organizationModel->find([]);
 
 
-        $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["departmentList" => $departmentCredentials, "courseList" => $courseCredentials, "roles" => self::ROLES]);
+
+
+        $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["departmentList" => $departmentCredentials, "courseList" => $courseCredentials,"organization_list" => $organization_list,"roles" => self::ROLES]);
     }
 
 

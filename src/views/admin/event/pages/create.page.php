@@ -69,6 +69,8 @@ require from("views/helper/partials/sidebar.partials.php");
                             placeholder="Enter your location" required="" />
                     </div>
 
+                    <div></div>
+
                     <div>
                         <label for="DEPARTMENT"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Department</label>
@@ -89,11 +91,25 @@ require from("views/helper/partials/sidebar.partials.php");
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             required>
                             <option disabled selected>Select Course</option>
-                            <?php foreach ($courseList as $department): ?>
-                                <option value="<?= $department["ID"] ?>"><?= $department["NAME"] ?></option>
+                            <?php foreach ($courseList as $course): ?>
+                                <option data-department="<?= $course["DEPARTMENT_ID"] ?>" value="<?= $course["ID"] ?>"><?= $course["NAME"] ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
+
+                    <div>
+                        <label for="ORGANIZATION"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Organization</label>
+                        <select name="ORGANIZATION_ID" id="ORGANIZATION"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            required>
+                            <option disabled selected>Select Organization</option>
+                            <?php foreach ($organization_list as $organization): ?>
+                                <option data-department="<?= $organization["DEPARTMENT_ID"] ?>" value="<?= $organization["ID"] ?>"><?= $organization["NAME"] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
 
 
 
@@ -113,17 +129,7 @@ require from("views/helper/partials/sidebar.partials.php");
 
 
 
-                    <div>
-                        <label for="ORGANIZERS"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Organizers</label>
-                        <select name="ORGANIZER" id="ORGANIZER"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            required>
-                            <option disabled selected>Select your Organizer</option>
-                            <option value="CASCSCS">CASCSCS</option>
-                        </select>
-                    </div>
-
+                   
                 </div>
 
                 <button type="submit"
@@ -135,6 +141,43 @@ require from("views/helper/partials/sidebar.partials.php");
     </section>
 </main>
 
+<script>
+$(document).ready(function(){
+    const department = $("#DEPARTMENT");
+    const courseSelection = $("#COURSE");
+    const organizationSelection =$("#ORGANIZATION")
+
+    department.on("change", function(event){
+        const selectedDepartment = $(this).val();
+        const courseOptions = $('#COURSE option');
+        const organizationSelectionOptions =$("#ORGANIZATION option")
+
+        courseOptions.hide();
+        organizationSelectionOptions.hide();
+        courseSelection.val("Select Course");
+        organizationSelection.val("Select Organization");
+
+
+        if(selectedDepartment){
+
+            organizationSelectionOptions.filter(function() {
+                return $(this).data('department') == selectedDepartment;
+            }).show();
+
+            courseOptions.filter(function() {
+                return $(this).data('department') == selectedDepartment;
+            }).show();
+        } else {
+            courseOptions.show();
+            organizationSelectionOptions.show();
+        }
+    });
+
+    courseSelection.on("change", function(event){
+        const selectedCourse = $(this).val();
+    });
+});
+</script>
 
 
 <!-- Script -->

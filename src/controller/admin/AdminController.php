@@ -17,6 +17,25 @@ class AdminController
         $upcoming_events = $eventsModel->find(["STATUS" => "ACTIVE"]);
 
 
-        $res->status(200)->render("views/admin/dashboard.view.php", ["upcoming_events" => $upcoming_events, "finished_events" => $finished_events]);
+        $transformed_upcoming_event = array_map(function ($event) {
+            $organizationCredentials = (new Model("ORGANIZATION"))->findOne(["ID" => $event["ORGANIZATION_ID"]],["select" => "NAME"]);
+            return[
+                ...$event,
+                "ORGANIZATION_NAME" => $organizationCredentials["NAME"]
+            ];
+
+        }, $upcoming_events);
+
+        $transformed_finished_event = array_map(function ($event) {
+            $organizationCredentials = (new Model("ORGANIZATION"))->findOne(["ID" => $event["ORGANIZATION_ID"]],["select" => "NAME"]);
+            return[
+                ...$event,
+                "ORGANIZATION_NAME" => $organizationCredentials["NAME"]
+            ];
+
+        }, $finished_events);
+
+
+        $res->status(200)->render("views/admin/dashboard.view.php", ["upcoming_events" => $transformed_upcoming_event, "finished_events" => $transformed_finished_event]);
     }
 }
