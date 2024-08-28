@@ -41,8 +41,8 @@ class StudentController
 
             foreach ($students as $details) {
                 $accountResult = (new Model("USERS"))->findOne(["ID" => $details["USER_ID"]]);
-                $courseResult = (new Model("COURSE"))->findOne(["ID" => $details["COURSE"]], ["select" => "NAME"]);
-                $departmentResult = (new Model("DEPARTMENT"))->findOne(["ID" => $details["DEPARTMENT"]], ["select" => "NAME"]);
+                $courseResult = (new Model("COURSE"))->findOne(["ID" => $details["COURSE_ID"]], ["select" => "NAME"]);
+                $departmentResult = (new Model("DEPARTMENT"))->findOne(["ID" => $details["DEPARTMENT_ID"]], ["select" => "NAME"]);
 
 
                 $fullName = $accountResult ? $accountResult["FIRST_NAME"] . " " . $accountResult["LAST_NAME"] : "Unknown";
@@ -141,10 +141,17 @@ class StudentController
 
 
         // check if the email exist
-        $existingAccount = $accountModel->findOne(["#or" => ["EMAIL" => $credentials["EMAIL"], "PHONE_NUMBER" => $credentials["PHONE_NUMBER"]]]);
 
-        if ($existingAccount) {
-            $res->status(400)->redirect("/student/create", ["error" => "Student Already exist"]);
+        $existingEmail = $accountModel->findOne(["EMAIL" => $credentials["EMAIL"], ]);
+
+        if ($existingEmail) {
+            $res->status(400)->redirect("/student/create", ["error" => "Email  Already exist"]);
+        }
+
+        $existingPhoneNumber = $accountModel->findOne(["PHONE_NUMBER" => $credentials["PHONE_NUMBER"], ]);
+
+        if ($existingPhoneNumber) {
+            $res->status(400)->redirect("/student/create", ["error" => "Phone number  Already exist"]);
         }
 
         $existingStudent = $studentModel->findOne(["STUDENT_ID" => $credentials["STUDENT_ID"]]);
@@ -177,8 +184,8 @@ class StudentController
             "USER_ID" => $UID,
             "STUDENT_ID" => $credentials["STUDENT_ID"],
             "YEAR_LEVEL" => $credentials["YEAR_LEVEL"],
-            "DEPARTMENT" => $credentials["DEPARTMENT_ID"],
-            "COURSE" => $credentials["COURSE_ID"],
+            "DEPARTMENT_ID" => $credentials["DEPARTMENT_ID"],
+            "COURSE_ID" => $credentials["COURSE_ID"],
         ]);
 
 

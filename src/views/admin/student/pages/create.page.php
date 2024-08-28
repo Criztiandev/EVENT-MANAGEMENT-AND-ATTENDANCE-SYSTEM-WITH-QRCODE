@@ -118,7 +118,7 @@ require from("views/helper/partials/sidebar.partials.php");
                             required>
                             <option disabled selected>Select Course</option>
                             <?php foreach ($courseList as $items): ?>
-                                <option value="<?= $items["ID"] ?>"><?= $items["NAME"] ?></option>
+                                <option data-department="<?= $items["DEPARTMENT_ID"] ?>" value="<?= $items["ID"] ?>"><?= $items["NAME"] ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -150,6 +150,38 @@ require from("views/helper/partials/sidebar.partials.php");
     </section>
 </main>
 
+<script>
+$(document).ready(function(){
+    const department = $("#DEPARTMENT");
+    const courseSelection = $("#COURSE");
+
+    department.on("change", function(event){
+        const selectedDepartment = $(this).val();
+        const courseOptions = $('#COURSE option');
+
+        courseOptions.hide();
+        courseSelection.val("Select Course");
+
+
+        if(selectedDepartment){
+
+
+            courseOptions.filter(function() {
+                return $(this).data('department') == selectedDepartment;
+            }).show();
+
+            console.log(courseOptions);
+
+        } else {
+            courseOptions.show();
+        }
+    });
+
+    courseSelection.on("change", function(event){
+        const selectedCourse = $(this).val();
+    });
+});
+</script>
 
 
 <!-- Script -->
