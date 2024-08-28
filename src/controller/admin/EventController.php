@@ -2,6 +2,7 @@
 
 namespace controller\admin;
 
+use DateTime;
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
@@ -373,33 +374,71 @@ class EventController
         }
 
 
-        $res->status(200)->redirect("/event/download?id=" . $EVENT_ID . "&UID=" . $UID, [
+        $res->status(200)->redirect("/event/qr-code?id=" . $EVENT_ID . "&UID=" . $UID ."&action=display", [
             "message" => "Event joined successfully",
             "qr_code_path" => $qrCodePath,
             "join_link" => $joinLink
         ]);
     }
 
-    public static function downloadQrCode(Request $req, Response $res)
+    public static function handleQrCode(Request $req, Response $res)
     {
         $EVENT_ID = $req->query["id"];
-        $UID = Express::Session()->get("UID");
+        $UID = $req->query["UID"];
+        $action = $req->query["action"] ?? 'display'; // Default to display if not specified
+
+        $eventModel = new Model("EVENT");
+        $organizationModel = new Model("ORGANIZATION");
+
+        $event_credentials = $eventModel->findOne(["ID" => $EVENT_ID]);
+
+        if(!$event_credentials){
+            $res->status(404)->redirect("/", ["error" => "Event doesnt exist"]);
+        }
+
+        $organization_credentials = $organizationModel->findOne(["ID" => $event_credentials["ORGANIZATION_ID"]]);
+       
+        if(!$organization_credentials){
+            $res->status(404)->redirect("/", ["error" => "Organization doesnt exist"]);
+        }
+
+        // make sure the current date is not passed withe event_credentials[END_DATE] which is 2024-08-31
+        $currentDate = new DateTime();
+        $endDate = new DateTime($event_credentials["END_DATE"]);
 
 
+        if ($currentDate > $endDate) {
+            $res->status(400)->render("views/error.page.php", ["error" => "Event has ended. QR code is no longer available."]);
+            return;
+        }
+    
         $directory = __DIR__ . "/../../assets/qr_codes/events";
         $qrCodePath = $directory . "/" . $EVENT_ID . "_user_" . $UID . ".svg";
-
+    
         if (file_exists($qrCodePath)) {
-            $fileName = "event_" . $EVENT_ID . "_qr_code.svg";
-
-            $res->header("Content-Type", "image/svg+xml");
-            $res->header("Content-Disposition", "attachment; filename=\"" . $fileName . "\"");
-            $res->header("Content-Length", filesize($qrCodePath));
-
-            readfile($qrCodePath);
-            exit;
+            $svgContent = file_get_contents($qrCodePath);
+            
+            if ($action === 'download') {
+                $res->header("Content-Type", "image/svg+xml");
+                $res->header("Content-Disposition", "attachment; filename=\"qr_code.svg\"");
+                $res->header("Content-Length", strlen($svgContent));
+                echo $svgContent;
+                exit;
+            } else {
+                // Display action
+                $res->status(200)->render(
+                    "views/user/pages/download.page.php",
+                    [   
+                        "eventName" => $event_credentials["NAME"],
+                        "organization" => $organization_credentials["NAME"],
+                        "message" => "Event joined successfully",
+                        "qr_code_content" => $svgContent,
+                        "download_url" => "/event/qr-code?id=" . $EVENT_ID . "&UID=" . $UID . "&action=download"
+                    ]
+                );
+            }
         } else {
-            $res->status(200)->redirect("/event", ["error" => "Something went wrong"]);
+            $res->status(404)->render("views/error.page.php", ["error" => "QR code not found"]);
         }
     }
 

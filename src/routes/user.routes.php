@@ -12,4 +12,4 @@ $router = Express::Router();
 $router->get("/", fn(Request $req, Response $res) => UserController::renderDashboard($req, $res));
 
 $router->get("/event/join", fn(Request $req, Response $res) => EventController::joinEvent($req, $res));
-$router->get("/event/download", fn(Request $req, Response $res) => EventController::downloadQrCode($req, $res));
+$router->get("/event/qr-code", fn(Request $req, Response $res) => EventController::handleQrCode($req, $res));
