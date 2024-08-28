@@ -13,7 +13,9 @@ use lib\Router\Express;
 
 $router = Express::Router();
 
-$router->get("/", fn(Request $req, Response $res) => EventController::renderScreen($req, $res));
+$router->get("/", fn(Request $req, Response $res) => AdminController::renderDashboard($req, $res));
+$router->get("/dashboard", fn(Request $req, Response $res) => AdminController::renderDashboard($req, $res));
+
 
 
 // Events
