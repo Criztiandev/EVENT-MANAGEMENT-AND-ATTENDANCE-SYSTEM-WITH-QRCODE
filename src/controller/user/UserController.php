@@ -13,14 +13,24 @@ class UserController
     {
         $studentModel = new Model("STUDENT");
         $eventsModel = new Model("EVENT");
+        $organizationModel = new Model("ORGANIZATION");
 
         $currentCredentials = $studentModel->findOne(["USER_ID" => $_SESSION["UID"]]);
         $event_list = $eventsModel->find(["STATUS" => "ACTIVE"]);
 
-        $allowed_events = array_filter($event_list, function ($event) use ($currentCredentials) {
+        $transformed_event_list = array_map(function ($event) {
+            $organizationCredentials = (new Model("ORGANIZATION"))->findOne(["ID" => $event["ORGANIZATION_ID"]],["select" => "NAME"]);
+            return[
+                ...$event,
+                "ORGANIZATION_NAME" => $organizationCredentials["NAME"]
+            ];
+
+        }, $event_list);
+
+        $allowed_events = array_filter($transformed_event_list, function ($event) use ($currentCredentials) {
             $yearLevelMatch = $event["YEAR_LEVEL"] == $currentCredentials["YEAR_LEVEL"];
-            $courseMatch = $event["COURSE_ID"] == $currentCredentials["COURSE"];
-            $departmentMatch = $event["DEPARTMENT_ID"] == $currentCredentials["DEPARTMENT"];
+            $courseMatch = $event["COURSE_ID"] == $currentCredentials["COURSE_ID"];
+            $departmentMatch = $event["DEPARTMENT_ID"] == $currentCredentials["DEPARTMENT_ID"];
 
             return $yearLevelMatch && $courseMatch && $departmentMatch;
         });

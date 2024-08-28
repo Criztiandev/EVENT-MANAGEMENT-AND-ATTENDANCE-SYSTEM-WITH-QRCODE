@@ -22,9 +22,10 @@ require from("views/helper/partials/sidebar.partials.php");
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th scope="col" class="px-4 py-3">Name</th>
+                            <th scope="col" class="px-4 py-3">Name</th>
                                 <th scope="col" class="px-4 py-3">Venue</th>
-                                <th scope="col" class="px-4 py-3">Attended</th>
+                                <th scope="col" class="px-4 py-3">Date</th>
+                                <th scope="col" class="px-4 py-3">Time</th>
                                 <th scope="col" class="px-4 py-3">Organizer</th>
                                 <th scope="col" class="px-4 py-3 text-center">
                                     <span>Actions</span>
@@ -48,6 +49,9 @@ require from("views/helper/partials/sidebar.partials.php");
                                     <td class="px-4 py-3">
                                         <?= $items["START_TIME"] ?>
                                         <?= $items["END_TIME"] ?>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <?= $items["ORGANIZATION_NAME"] ?>
                                     </td>
                                     <td class=" flex justify-center items-center">
 
