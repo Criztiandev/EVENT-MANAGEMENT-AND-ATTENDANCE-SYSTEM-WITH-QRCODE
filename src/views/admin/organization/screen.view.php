@@ -85,7 +85,7 @@ require from("views/helper/partials/sidebar.partials.php");
                                         </a>
 
                                         <button type="button" data-delete-id="<?= $items["ID"] ?>"
-                                            class="delete-modal-btn text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                            class="organization-delete text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                             <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18'
                                                 viewBox='0 0 24 24'>
                                                 <title>delete_2_fill</title>
@@ -211,7 +211,7 @@ require from("views/helper/partials/sidebar.partials.php");
                                         </a>
 
                                         <button type="button" data-delete-id="<?= $items["ID"] ?>"
-                                            class="delete-modal-btn text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                            class="position-delete text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                             <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18'
                                                 viewBox='0 0 24 24'>
                                                 <title>delete_2_fill</title>
@@ -292,7 +292,9 @@ require from("views/helper/partials/sidebar.partials.php");
     </section>
 </main>
 
-<?php display("views/helper/components/ui/DeleteModal.php", ["route" => "/organization/delete"]) ?>
+
+<?php display("views/helper/components/ui/DeleteModal.php", ["key" =>"position-delete",  "route" => "/organization/position/delete"]) ?>
+<?php display("views/helper/components/ui/DeleteModal.php", ["key" => "organization-delete", "route" => "/organization/delete"]) ?>
 
 <!-- Script -->
 <?php require from("views/helper/components/script/response.script.php"); ?>

@@ -13,6 +13,9 @@ require from("views/helper/partials/sidebar.partials.php");
             </h2>
 
             <form action="/organization/create" method="POST">
+              
+                <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+
                 <div class="w-full mb-4">
                     <label for="NAME" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Organization
                         name</label>
@@ -21,7 +24,6 @@ require from("views/helper/partials/sidebar.partials.php");
                         placeholder="Enter your organization name" required="" />
                 </div>
 
-                <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
 
                     <div>
                         <label for="DEPARTMENT"

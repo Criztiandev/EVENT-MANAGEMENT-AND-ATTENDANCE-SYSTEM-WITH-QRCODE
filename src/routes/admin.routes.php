@@ -72,6 +72,8 @@ $router->get("/organization/delete", fn(Request $req, Response $res) => Organiza
 $router->post("/organization/create", fn(Request $req, Response $res) => OrganizationController::createOrganization($req, $res));
 $router->post("/organization/position/create", fn(Request $req, Response $res) => OrganizationController::createPosition($req, $res));
 $router->delete("/organization/delete", fn(Request $req, Response $res) => OrganizationController::deleteOrganization($req, $res));
+$router->delete("/organization/position/delete", fn(Request $req, Response $res) => OrganizationController::deletePosition($req, $res));
+
 
 
 

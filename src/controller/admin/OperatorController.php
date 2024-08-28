@@ -70,9 +70,12 @@ class OperatorController
      * @return void
      */
     public static function renderCreatePage(Request $req, Response $res)
-    {
+    {   
+        $organization_list = (new Model("ORGANIZATION"))->find(["DELETE_STATUS" => "ACTIVE"]);
+        $position_list = (new Model("POSITION"))->find(["DELETE_STATUS" => "ACTIVE"]);
 
-        $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["roles" => self::ROLES]);
+
+        $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["roles" => self::ROLES, "organization_list" => $organization_list, "position_list" => $position_list]);
     }
 
 

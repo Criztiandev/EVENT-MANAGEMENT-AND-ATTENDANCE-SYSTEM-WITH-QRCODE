@@ -53,33 +53,47 @@
 
 <script>
     $(document).ready(function () {
+        // Get key and route from PHP
+        const key = <?php echo json_encode($key); ?>;
+        const route = <?php echo json_encode($route ?? null); ?>;
+
+        // Select modal and delete form elements
         const $modal = $('#modal');
-        const deletForm = $("#delete-form")
+        const deleteForm = $("#delete-form");
 
-        const closeIDs = ["#backdrop", "#closeModal", "#"]
+        // Array of close element IDs
+        const closeIDs = ["#backdrop", "#closeModal", "#cancel-btn"];
 
-
+        // Function to toggle the modal visibility
         function toggleModal(show) {
             $modal.toggle(show);
             $('body').css('overflow', show ? 'hidden' : 'auto');
         }
 
-        $(document).on('click', '.delete-modal-btn', function () {
-            const currentRoute = <?php echo json_encode($route ?? null); ?>;
+        // Event handler for opening the modal
+        $(document).on('click', `.${key || "delete-modal-btn"}`, function () {
+            const currentRoute = route;
+
+            // Get the UID from the clicked element
             const UID = $(this).data("delete-id");
 
             if (!currentRoute) {
-                alert("There is no route")
+                alert("There is no route");
+                return;
             }
 
-            deletForm.attr("action", `${currentRoute}?id=${UID}`);
+            // Set the form action
+            deleteForm.attr("action", `${currentRoute}?id=${UID}`);
 
-
-            toggleModal(true)
+            // Show the modal
+            toggleModal(true);
         });
 
-        $('#cancel-btn, #backdrop, #close-btn').click(function () {
-            toggleModal(false);
+        // Event handlers for closing the modal
+        closeIDs.forEach(id => {
+            $(id).click(function () {
+                toggleModal(false);
+            });
         });
 
     });

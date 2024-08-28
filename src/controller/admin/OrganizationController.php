@@ -40,15 +40,15 @@ class OrganizationController
             $departmentModel = new Model("DEPARTMENT");
             $positionModel = new Model("POSITIOn");
 
-            $transformed_organization_list = array_map( function($org) use ($departmentModel){
+            $transformed_organization_list = array_map(function ($org) use ($departmentModel) {
 
-                $department_credentials = $departmentModel->findOne(["ID" => $org["DEPARTMENT_ID"]],["select" => "NAME"]);
+                $department_credentials = $departmentModel->findOne(["ID" => $org["DEPARTMENT_ID"]], ["select" => "NAME"]);
 
                 return [
                     ...$org,
                     "DEPARTMENT_NAME" => $department_credentials["NAME"],
                 ];
-            },$organizations);
+            }, $organizations);
 
             $position_list = $positionModel->find(["DELETE_STATUS" => "ACTIVE"]);
 
@@ -149,13 +149,21 @@ class OrganizationController
             return $res->status(400)->redirect("/organization", ["error" => "Department doest exist"]);
         }
 
+
+        // check if the name is already created
+        $existing_organization = $organizationModel->findOne(["NAME" => $payload["NAME"]]);
+        if ($existing_organization) {
+            return $res->status(400)->redirect("/organization/create", ["error" => "Name is already exist"]);
+        }
+
+
         $credentials = $organizationModel->createOne([
             "ID" => $UID,
             ...$payload
-          ]);
-          if(!$credentials){
+        ]);
+        if (!$credentials) {
             return $res->status(400)->redirect("/organization/create", ["error" => "Creation failed"]);
-          }
+        }
 
         return $res->status(200)->redirect("/organization", ["success" => "Organization created successfully"]);
     }
@@ -169,17 +177,24 @@ class OrganizationController
 
         $existing_organization = $organizationModel->findOne(["ID" => $payload["ORGANIZATION_ID"]]);
         if (!$existing_organization) {
-         return $res->status(200)->redirect("/organization/create", ["error" => "Organization doesn't exist"]);
+            return $res->status(200)->redirect("/organization/position/create", ["error" => "Organization doesn't exist"]);
+        }
+
+        // check if position name is already created
+        $existing_position = $positionModel->findOne(["NAME" => $payload["NAME"]]);
+        if ($existing_position) {
+            return $res->status(200)->redirect("/organization/position/create", ["error" => "Title is already exist"]);
         }
 
         $credentials = $positionModel->createOne([
+            "ID"=> $UID,
             ...$payload
         ]);
 
         if (!$credentials) {
             return $res->status(200)->redirect("/organization/create", ["error" => "Creation failed"]);
-           }
-   
+        }
+
 
         return $res->status(200)->redirect("/organization", ["success" => "Organization created successfully"]);
     }
@@ -207,33 +222,35 @@ class OrganizationController
     public static function deleteOrganization(Request $req, Response $res)
     {
         $UID = $req->query["id"];
-        $accountModel = new Model("USERS");
         $organizationModel = new Model("ORGANIZATION");
 
-
-
-        $existOrganization = $organizationModel->findOne(["ID" => $UID], ["select" => "ID, USER_ID"]);
+        $existOrganization = $organizationModel->findOne(["ID" => $UID], ["select" => "ID"]);
         if (!$existOrganization) {
             return $res->status(400)->redirect("/organization", ["error" => "Organization doesn't exist"]);
         }
 
-
-        $existingAccount = $accountModel->findOne(["ID" => $existOrganization["USER_ID"]], ["select" => "ID"]);
-        if (!$existingAccount) {
-            return $res->status(400)->redirect("/organization", ["error" => "Account doesn't exist"]);
-        }
-
-
-        // delete the account
-        $deleteAccount = $accountModel->deleteOne(["ID" => $existOrganization["USER_ID"]]);
-        if (!$deleteAccount) {
-            return $res->status(400)->redirect("/organization", ["error" => "Deletion Failed"]);
-        }
-
-
         // delete the organization
         $deletedOrganization = $organizationModel->deleteOne(["ID" => $UID]);
         if (!$deletedOrganization) {
+            return $res->status(400)->redirect("/organization", ["error" => "Deletion Failed"]);
+        }
+
+        $res->status(200)->redirect("/organization", ["success" => "Deleted Successfully"]);
+    }
+
+    public static function deletePosition(Request $req, Response $res)
+    {
+        $UID = $req->query["id"];
+        $positionModel = new Model("POSITION");
+
+        $existPosition = $positionModel->findOne(["ID" => $UID], ["select" => "ID"]);
+        if (!$existPosition) {
+            return $res->status(400)->redirect("/organization", ["error" => "Position doesn't exist"]);
+        }
+
+        // delete the position
+        $deletedPosition = $positionModel->deleteOne(["ID" => $UID]);
+        if (!$deletedPosition) {
             return $res->status(400)->redirect("/organization", ["error" => "Deletion Failed"]);
         }
 
