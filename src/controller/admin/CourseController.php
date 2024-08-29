@@ -84,10 +84,10 @@ class CourseController
         try {
             $courseID = $req->query["id"];
             $courseModel = new Model("COURSE");
-
+            $departmentModel = new Model("DEPARTMENT");
             $credentials = $courseModel->findOne(["ID" => $courseID]);
 
-
+            $department_list = $departmentModel->find([]);
             if (!$credentials) {
                 $res->status(400)->redirect("/users/update?id=" . $courseID, ["error" => "Course doesn't exist"]);
             }
@@ -98,6 +98,7 @@ class CourseController
                 [
                     "UID" => $courseID,
                     "details" => $credentials,
+                    "department" => $department_list,
                     "roles" => self::ROLES
                 ]
             );
