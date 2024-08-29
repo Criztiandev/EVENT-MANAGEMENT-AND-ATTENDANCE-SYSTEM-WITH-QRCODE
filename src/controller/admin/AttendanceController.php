@@ -106,10 +106,10 @@ class AttendanceController
         $studentModel = new Model("STUDENT");
         $attendanceModel = new Model("ATTENDANCE");
         $eventModel = new Model("EVENT");
-
+    
         $STUDENT_ID = $req->body["STUDENT_ID"];
         $EVENT_ID = $req->body["EVENT_ID"];
-
+    
         // Validate student existence
         $existStudent = $studentModel->findOne(["STUDENT_ID" => $STUDENT_ID]);
         if (!$existStudent) {
@@ -120,7 +120,7 @@ class AttendanceController
             ]);
             return;
         }
-
+    
         // Validate event existence
         $existEvent = $eventModel->findOne(["ID" => $EVENT_ID]);
         if (!$existEvent) {
@@ -131,24 +131,21 @@ class AttendanceController
             ]);
             return;
         }
-
+    
         // Set the timezone to Philippines
         date_default_timezone_set('Asia/Manila');
-
+    
         $currentDateTime = new DateTime();
         $currentTime = $currentDateTime->format('g:i A');
-        $isAM = ($currentTime < '12:00:00');
-
-
+        $isAM = $currentDateTime->format('A') === 'AM';
+    
         // Check if attendance record exists for this student and event
         $existingAttendance = $attendanceModel->findOne([
             "STUDENT_ID" => $STUDENT_ID,
             "EVENT_ID" => $EVENT_ID
         ]);
-
-
+    
         if ($existingAttendance) {
-            // Update existing record
             $updateData = [];
             if ($isAM) {
                 if (empty($existingAttendance['CHECK_IN_TIME_AM'])) {
@@ -177,13 +174,12 @@ class AttendanceController
                     return;
                 }
             }
-
+    
             $attendanceResult = $attendanceModel->updateOne(
                 $updateData,
-                ["ID" => $existingAttendance['ID']],
+                ["ID" => $existingAttendance['ID']]
             );
-
-
+    
         } else {
             // Create new attendance record
             $attendanceData = [
@@ -191,7 +187,7 @@ class AttendanceController
                 'STUDENT_ID' => $STUDENT_ID,
                 'EVENT_ID' => $EVENT_ID
             ];
-
+    
             if ($isAM) {
                 $attendanceData['CHECK_IN_TIME_AM'] = $currentTime;
             } else {
@@ -199,7 +195,7 @@ class AttendanceController
             }
             $attendanceResult = $attendanceModel->createOne($attendanceData);
         }
-
+    
         if ($attendanceResult) {
             $res->status(200);
             echo json_encode([
@@ -231,7 +227,6 @@ class AttendanceController
             ]);
         }
     }
-
     /**
      * Update user controller
      * @param \lib\Router\classes\Request $req
