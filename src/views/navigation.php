@@ -93,7 +93,7 @@ $admin_navigation = [
 
         [
             'path' => "/department",
-            'title' => 'Department to College',
+            'title' => ' College',
             'icon' => ' <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -182,7 +182,7 @@ $admin_navigation = [
 
         [
             'path' => "/operator",
-            'title' => 'Operator to Administrator',
+            'title' => 'Administrator',
             'icon' => '<svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
