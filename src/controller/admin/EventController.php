@@ -307,14 +307,51 @@ class EventController
     {
         $EVENT_ID = $req->query["id"];
         $eventModel = new Model("EVENT");
-
+        $attendanceModel = new Model("ATTENDANCE");
 
         $event_credentials = $eventModel->findOne(["ID" => $EVENT_ID, "STATUS" => "END"]);
         if (!$event_credentials) {
             $res->status(400)->redirect("/event/session-start?id=" . $EVENT_ID, ["error" => "Event doesn't exist"]);
         }
-        dd($event_credentials);
 
+        // get all attendance related to this event
+        $attendees_list = $attendanceModel->find([]);
+
+        $filtered_attendees_list = array_filter($attendees_list, function ($attendee) use ($EVENT_ID) {
+            return $EVENT_ID === $attendee["EVENT_ID"];
+        });
+
+        $transformed_attendees_list = array_map(function ($attendee) use ($event_credentials)  {
+            $studentModel = new Model("STUDENT");
+            $accountModel = new Model("USERS");
+            $courseModel = new Model("COURSE");
+            $departmentModel = new Model("DEPARTMENT");
+
+
+            $student_credentials = $studentModel->findOne(["STUDENT_ID"=> $attendee["STUDENT_ID"]]);
+            $account_credentials = $accountModel->findOne(["ID" => $student_credentials["USER_ID"]]);
+            $course_credentials = $courseModel->findOne(["ID"=> $student_credentials["COURSE_ID"]]);
+            $department_credentials = $departmentModel->findOne(["ID"=> $student_credentials["DEPARTMENT_ID"]]);
+
+   
+
+            return [
+                ...$attendee,
+                "STUDENT_ID" => $attendee["STUDENT_ID"],
+                "FULLNAME" => $account_credentials["FIRST_NAME"] . "". $account_credentials["LAST_NAME"],
+                "COURSE_NAME"=> $course_credentials["NAME"],
+                "DEPARTMENT_NAME" => $department_credentials["NAME"],
+                "YEAR_LEVEL" => $student_credentials["YEAR_LEVEL"],
+                "CHECK_IN_TIME_AM" => $attendee["CHECK_IN_TIME_AM"],
+                "CHECK_OUT_TIME_AM" => $attendee["CHECK_OUT_TIME_AM"],
+                "CHECK_IN_TIME_PM" => $attendee["CHECK_IN_TIME_PM"],
+                "CHECK_OUT_TIME_PM" => $attendee["CHECK_OUT_TIME_PM"],
+            ];
+
+        }, $filtered_attendees_list);
+
+
+        $res->status(200)->render(self::BASE_URL . "/pages/print.attendance.php" , ["attendees_list" => $transformed_attendees_list]);
     }
 
     public static function joinEvent(Request $req, Response $res)

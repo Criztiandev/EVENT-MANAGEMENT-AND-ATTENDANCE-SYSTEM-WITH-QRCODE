@@ -13,7 +13,7 @@ class AdminController
     {
         $eventsModel = new Model("EVENT");
 
-        $finished_events = $eventsModel->find(["STATUS" => "DONE"]);
+        $finished_events = $eventsModel->find(["STATUS" => "END"]);
         $upcoming_events = $eventsModel->find(["STATUS" => "ACTIVE"]);
 
 
