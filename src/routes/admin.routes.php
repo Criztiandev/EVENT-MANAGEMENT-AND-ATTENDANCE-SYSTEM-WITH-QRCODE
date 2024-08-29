@@ -76,8 +76,6 @@ $router->delete("/organization/position/delete", fn(Request $req, Response $res)
 
 
 
-
-
 // department
 $router->get("/department", fn(Request $req, Response $res) => DepartmentController::renderScreen($req, $res));
 $router->get("/department/create", fn(Request $req, Response $res) => DepartmentController::renderCreatePage($req, $res));

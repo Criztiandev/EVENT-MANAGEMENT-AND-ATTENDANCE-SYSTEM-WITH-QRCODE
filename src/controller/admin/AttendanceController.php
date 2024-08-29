@@ -195,7 +195,9 @@ class AttendanceController
             }
             $attendanceResult = $attendanceModel->createOne($attendanceData);
         }
-    
+        
+
+            dd($attendanceResult);
         if ($attendanceResult) {
             $res->status(200);
             echo json_encode([

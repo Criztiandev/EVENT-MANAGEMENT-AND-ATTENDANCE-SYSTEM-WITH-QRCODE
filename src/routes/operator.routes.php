@@ -1,4 +1,6 @@
 <?php
+
+use controller\admin\AttendanceController;
 use controller\operator\OperatorEventController;
 use controller\operator\OperatorRoleController;
 use lib\Router\classes\Request;
@@ -25,3 +27,10 @@ $router->delete("/event/delete", fn(Request $req, Response $res) => OperatorEven
 $router->post("/event/session-start", fn(Request $req, Response $res) => OperatorEventController::startEvent($req, $res));
 $router->post("/event/session-end", fn(Request $req, Response $res) => OperatorEventController::endEvent($req, $res));
 $router->get("/event/session-print", fn(Request $req, Response $res) => OperatorEventController::printEvent($req, $res));
+
+
+// Attendance
+$router->get("/attendance", fn(Request $req, Response $res) => AttendanceController::renderScreen($req, $res));
+$router->get("/attendance/update", fn(Request $req, Response $res) => AttendanceController::renderUpdatePage($req, $res));
+
+$router->post("/attendance/create", fn(Request $req, Response $res) => AttendanceController::createAttendance($req, $res));
