@@ -137,16 +137,25 @@ class OperatorController
 
 
         // check if the email exist
-        $existingAccount = $accountModel->findOne(["#or" => ["EMAIL" => $credentials["EMAIL"], "PHONE_NUMBER" => $credentials["PHONE_NUMBER"]]]);
+        $existingEmail = $accountModel->findOne(["EMAIL" => $credentials["EMAIL"]]);
 
-        if ($existingAccount) {
-            $res->status(400)->redirect("/operator/create", ["error" => "Operator Already exist"]);
+        if ($existingEmail) {
+            $res->status(400)->redirect("/operator/create", ["error" => "Email Already exist"]);
         }
 
-        $existingOperator = $operatorModel->findOne(["#or" => ["OPERATOR_ID" => $credentials["OPERATOR_ID"], "ORGANIZATION_ID" => $credentials["ORGANIZATION_ID"], "POSITION_ID" => $credentials["POSITION_ID"]]]);
+        $phoneNumber = $accountModel->findOne(["PHONE_NUMBER" => $credentials["PHONE_NUMBER"]]);
 
-        if ($existingOperator) {
-            $res->status(400)->redirect("/operator/create", ["error" => "Operator Already exist"]);
+        if ($phoneNumber) {
+            $res->status(400)->redirect("/operator/create", ["error" => "Phone number Already exist"]);
+        }
+
+
+        // $existingOperator = $operatorModel->findOne(["#or" => ["OPERATOR_ID" => $credentials["OPERATOR_ID"], "ORGANIZATION_ID" => $credentials["ORGANIZATION_ID"], "POSITION_ID" => $credentials["POSITION_ID"]]]);
+
+        $existingIDOperator = $operatorModel->findOne(["OPERATOR_ID" => $credentials["OPERATOR_ID"]]);
+
+        if ($existingIDOperator) {
+            $res->status(400)->redirect("/operator/create", ["error" => "Operator ID Already exist"]);
         }
 
         $hashed_password = password_hash($credentials["PASSWORD"], PASSWORD_BCRYPT, ["cost" => 10]);
