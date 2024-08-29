@@ -5,9 +5,11 @@ use lib\Router\Express;
 require from("views/navigation.php");
 $role = Express::Session()->get("credentials")["role"];
 
+
 $navigation = [
     "student" => $user_navigation,
-    "admin" => $admin_navigation
+    "admin" => $admin_navigation,
+    "operator" => $operator_navigation
 ];
 
 function isUri($path)

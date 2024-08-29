@@ -3,7 +3,7 @@ use lib\Router\Express;
 
 
 $routes = [
-    "operator" => 'routes/user.routes.php',
+    "operator" => 'routes/operator.routes.php',
     "student" => 'routes/user.routes.php',
     "admin" => 'routes/admin.routes.php',
     'auth' => 'routes/auth.routes.php'
