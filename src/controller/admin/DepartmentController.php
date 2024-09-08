@@ -144,11 +144,29 @@ class DepartmentController
      * @param \lib\Router\classes\Response $res
      * @return void
      */
-    public static function updateUser(Request $req, Response $res)
+    public static function updateDepartment(Request $req, Response $res)
     {
+        $department_id = $req->query["id"];
+        $credentials = $req->body;
 
+        $department_model = new Model("DEPARTMENT");
+        $department_credentials = $department_model->findOne(["ID" => $department_id]);
 
-        // $res->status(200)->redirect("/users/update?id=" . $UID, ["success" => "Update Successfull"]);
+        if (!$department_credentials) {
+            return $res->status(400)->redirect("/department/update?id=" . $department_id, ["error" => "Update department went wrong"]);
+        }
+
+        $updated_course_credentials = $department_model->updateOne([
+            "NAME" => $credentials["NAME"],
+            "COLOR" => $credentials["COLOR"],
+
+        ], ["ID" => $department_id]);
+
+        if (!$updated_course_credentials) {
+            return $res->status(400)->redirect("/department/update?id=" . $department_id, ["error" => "Update department went wrong"]);
+        }
+
+        $res->status(200)->redirect("/department/update?id=" . $department_id, ["success" => "Update Successfully"]);
     }
 
     /**

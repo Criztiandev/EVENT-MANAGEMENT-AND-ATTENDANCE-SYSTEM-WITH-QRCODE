@@ -74,8 +74,6 @@ $router->post("/organization/position/create", fn(Request $req, Response $res) =
 $router->delete("/organization/delete", fn(Request $req, Response $res) => OrganizationController::deleteOrganization($req, $res));
 $router->delete("/organization/position/delete", fn(Request $req, Response $res) => OrganizationController::deletePosition($req, $res));
 
-
-
 // department
 $router->get("/department", fn(Request $req, Response $res) => DepartmentController::renderScreen($req, $res));
 $router->get("/department/create", fn(Request $req, Response $res) => DepartmentController::renderCreatePage($req, $res));
@@ -84,6 +82,7 @@ $router->get("/department/update", fn(Request $req, Response $res) => Department
 
 // Department Actions
 $router->post("/department/create", fn(Request $req, Response $res) => DepartmentController::createDepartment($req, $res));
+$router->put("/department/update", fn(Request $req, Response $res) => DepartmentController::updateDepartment($req, $res));
 $router->delete("/department/delete", fn(Request $req, Response $res) => DepartmentController::deleteDepartment($req, $res));
 
 
