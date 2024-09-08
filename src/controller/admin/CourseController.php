@@ -48,7 +48,7 @@ class CourseController
                     "STATUS" => $items["STATUS"]
                 ];
             }, $courses);
-            
+
             $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["courses" => $transformed_course]);
 
         } catch (\Exception $e) {
@@ -88,6 +88,7 @@ class CourseController
             $credentials = $courseModel->findOne(["ID" => $courseID]);
 
             $department_list = $departmentModel->find([]);
+
             if (!$credentials) {
                 $res->status(400)->redirect("/users/update?id=" . $courseID, ["error" => "Course doesn't exist"]);
             }
@@ -98,7 +99,7 @@ class CourseController
                 [
                     "UID" => $courseID,
                     "details" => $credentials,
-                    "department" => $department_list,
+                    "department_list" => $department_list,
                     "roles" => self::ROLES
                 ]
             );
@@ -164,9 +165,29 @@ class CourseController
      */
     public static function updateCourse(Request $req, Response $res)
     {
+        $course_id = $req->query["id"];
+        $credentials = $req->body;
 
+        $courseModel = new Model("COURSE");
 
-        // $res->status(200)->redirect("/users/update?id=" . $UID, ["success" => "Update Successfull"]);
+        // check if course exist    
+        $course_credentials = $courseModel->findOne(["ID" => $course_id]);
+
+        if (!$course_credentials) {
+            return $res->status(400)->redirect("/course/update?id" . $course_id, ["error" => "Updating Course Credentials Failed"]);
+        }
+
+        unset($credentials["_method"]);
+        $updated_course_credentials = $courseModel->updateOne([
+            "DEPARTMENT_ID" => $credentials["DEPARTMENT"],
+            "NAME" => $credentials["NAME"],
+        ], ["ID" => $course_id]);
+
+        if (!$updated_course_credentials) {
+            return $res->status(400)->redirect("/course/update?id" . $course_id, ["error" => "Updating Course Credentials Failed"]);
+        }
+
+        $res->status(200)->redirect("/course/update?id=" . $course_id, ["success" => "Update Successfully"]);
     }
 
     /**

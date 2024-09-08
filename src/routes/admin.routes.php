@@ -23,7 +23,6 @@ $router->get("/dashboard", fn(Request $req, Response $res) => AdminController::r
 $router->get("/event", fn(Request $req, Response $res) => EventController::renderScreen($req, $res));
 $router->get("/event/create", fn(Request $req, Response $res) => EventController::renderCreatePage($req, $res));
 $router->get("/event/update", fn(Request $req, Response $res) => EventController::renderUpdatePage($req, $res));
-
 $router->get("/event/session-start", fn(Request $req, Response $res) => EventController::renderSession($req, $res));
 
 // Event Actions
@@ -37,7 +36,6 @@ $router->get("/event/session-print", fn(Request $req, Response $res) => EventCon
 // Attendance
 $router->get("/attendance", fn(Request $req, Response $res) => AttendanceController::renderScreen($req, $res));
 $router->get("/attendance/update", fn(Request $req, Response $res) => AttendanceController::renderUpdatePage($req, $res));
-
 $router->post("/attendance/create", fn(Request $req, Response $res) => AttendanceController::createAttendance($req, $res));
 
 
@@ -94,7 +92,7 @@ $router->get("/course", fn(Request $req, Response $res) => CourseController::ren
 $router->get("/course/create", fn(Request $req, Response $res) => CourseController::renderCreatePage($req, $res));
 $router->get("/course/update", fn(Request $req, Response $res) => CourseController::renderUpdatePage($req, $res));
 
-
 // Course Actions
 $router->post("/course/create", fn(Request $req, Response $res) => CourseController::createCourse($req, $res));
+$router->put("/course/update", fn(Request $req, Response $res) => CourseController::updateCourse($req, $res));
 $router->delete("/course/delete", fn(Request $req, Response $res) => CourseController::deleteCourse($req, $res));
