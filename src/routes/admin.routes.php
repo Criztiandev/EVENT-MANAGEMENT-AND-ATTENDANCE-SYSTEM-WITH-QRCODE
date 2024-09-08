@@ -66,11 +66,17 @@ $router->get("/organization", fn(Request $req, Response $res) => OrganizationCon
 $router->get("/organization/create", fn(Request $req, Response $res) => OrganizationController::renderCreatePage($req, $res));
 $router->get("/organization/position/create", fn(Request $req, Response $res) => OrganizationController::renderCreatePositionPage($req, $res));
 $router->get("/organization/update", fn(Request $req, Response $res) => OrganizationController::renderUpdatePage($req, $res));
+$router->get("/organization/position/update", fn(Request $req, Response $res) => OrganizationController::renderPositionUpdatePage($req, $res));
 $router->get("/organization/delete", fn(Request $req, Response $res) => OrganizationController::renderUpdatePage($req, $res));
 
 // organization Actions
 $router->post("/organization/create", fn(Request $req, Response $res) => OrganizationController::createOrganization($req, $res));
 $router->post("/organization/position/create", fn(Request $req, Response $res) => OrganizationController::createPosition($req, $res));
+$router->put("/organization/position/update", fn(Request $req, Response $res) => OrganizationController::updatePosition($req, $res));
+$router->put("/organization/update", fn(Request $req, Response $res) => OrganizationController::updateOrganization($req, $res));
+
+
+
 $router->delete("/organization/delete", fn(Request $req, Response $res) => OrganizationController::deleteOrganization($req, $res));
 $router->delete("/organization/position/delete", fn(Request $req, Response $res) => OrganizationController::deletePosition($req, $res));
 

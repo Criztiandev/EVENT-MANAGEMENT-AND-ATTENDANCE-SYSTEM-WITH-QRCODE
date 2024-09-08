@@ -95,28 +95,51 @@ class OrganizationController
     public static function renderUpdatePage(Request $req, Response $res)
     {
         try {
+
             $organizationID = $req->query["id"];
+            $credentials = $req->body;
             $organizationModel = new Model("ORGANIZATION");
-            $accountModel = new Model("USERS");
+            $departmentModel = new Model("DEPARTMENT");
 
-            $organizations = $organizationModel->findOne(["ID" => $organizationID]);
+            $organization_credentials = $organizationModel->findOne(["ID" => $organizationID]);
+            $department_list = $departmentModel->find([]);
 
-            $account_credentials = $accountModel->findOne(
-                ["ID" => $organizations["USER_ID"]],
-
-            );
-
-            $transformed_organizations = [
-                ...$account_credentials,
-                ...$organizations
-            ];
 
 
             $res->status(200)->render(
                 self::BASE_URL . "/pages/update.page.php",
                 [
                     "UID" => $organizationID,
-                    "details" => $transformed_organizations,
+                    "details" => $organization_credentials,
+                    "department_list" => $department_list,
+                    "roles" => self::ROLES
+                ]
+            );
+        } catch (\Exception $e) {
+            $res->status(500)->json(["error" => "Failed to fetch users: " . $e->getMessage()]);
+        }
+    }
+
+    public static function renderPositionUpdatePage(Request $req, Response $res)
+    {
+        try {
+
+            $positionID = $req->query["id"];
+            $credentials = $req->body;
+            $positionModel = new Model("POSITION");
+            $organizationModel = new Model("ORGANIZATION");
+
+            $position_credentials = $positionModel->findOne(["ID" => $positionID]);
+            $organization_list = $organizationModel->find([]);
+
+
+
+            $res->status(200)->render(
+                self::BASE_URL . "/pages/position.update.page.php",
+                [
+                    "UID" => $positionID,
+                    "details" => $position_credentials,
+                    "organization_list" => $organization_list,
                     "roles" => self::ROLES
                 ]
             );
@@ -187,7 +210,7 @@ class OrganizationController
         }
 
         $credentials = $positionModel->createOne([
-            "ID"=> $UID,
+            "ID" => $UID,
             ...$payload
         ]);
 
@@ -206,12 +229,60 @@ class OrganizationController
      * @param \lib\Router\classes\Response $res
      * @return void
      */
-    public static function updateUser(Request $req, Response $res)
+    public static function updateOrganization(Request $req, Response $res)
     {
+        $organization_id = $req->query["id"];
+        $credentials = $req->body;
 
+        $organization_model = new Model("ORGANIZATION");
 
-        // $res->status(200)->redirect("/users/update?id=" . $UID, ["success" => "Update Successfull"]);
+        $organization_credentials = $organization_model->findOne(["ID" => $organization_id]);
+        if (!$organization_credentials) {
+            return $res->status(200)->redirect("/organization/update?id=" . $organization_id, ["error" => "Organization doesn't exist "]);
+        }
+
+        $updated_organization_credentials = $organization_model->updateOne([
+            "NAME" => $credentials["NAME"],
+            "DEPARTMENT_ID" => $credentials["DEPARTMENT_ID"],
+        ], ["ID" => $organization_id]);
+
+        if (!$updated_organization_credentials) {
+            return $res->status(200)->redirect("/organization/update?id=" . $organization_id, ["error" => "Update Credentials failed"]);
+        }
+
+        $res->status(200)->redirect("/organization/update?id=" . $organization_id, ["success" => "Update Successfull"]);
     }
+
+    /**
+     * Update user controller
+     * @param \lib\Router\classes\Request $req
+     * @param \lib\Router\classes\Response $res
+     * @return void
+     */
+    public static function updatePosition(Request $req, Response $res)
+    {
+        $position_id = $req->query["id"];
+        $credentials = $req->body;
+
+        $position_model = new Model("POSITION");
+
+        $position_credentials = $position_model->findOne(["ID" => $position_id]);
+        if (!$position_credentials) {
+            return $res->status(200)->redirect("/organization/position/update?id=" . $position_id, ["error" => "Position doesn't exist "]);
+        }
+
+        $updated_position_credentials = $position_model->updateOne([
+            "NAME" => $credentials["NAME"],
+            "ORGANIZATION_ID" => $credentials["ORGANIZATION_ID"],
+        ], ["ID" => $position_id]);
+
+        if (!$updated_position_credentials) {
+            return $res->status(200)->redirect("/organization/position/update?id=" . $position_id, ["error" => "Update Credentials failed"]);
+        }
+
+        $res->status(200)->redirect("/organization/position/update?id=" . $position_id, ["success" => "Update Successfull"]);
+    }
+
 
     /**
      * Delete user controller
