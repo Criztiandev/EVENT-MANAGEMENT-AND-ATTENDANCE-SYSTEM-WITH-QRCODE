@@ -48,7 +48,9 @@ $router->get("/student/update", fn(Request $req, Response $res) => StudentContro
 
 // Student Actions
 $router->post("/student/create", fn(Request $req, Response $res) => StudentController::createStudent($req, $res));
+$router->post("/student/import", fn(Request $req, Response $res) => StudentController::importStudent($req, $res));
 $router->delete("/student/delete", fn(Request $req, Response $res) => StudentController::deleteStudent($req, $res));
+$router->put("/student/update", fn(Request $req, Response $res) => StudentController::updateStudent($req, $res));
 
 // operator
 $router->get("/operator", fn(Request $req, Response $res) => OperatorController::renderScreen($req, $res));

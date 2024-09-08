@@ -162,7 +162,7 @@ class CourseController
      * @param \lib\Router\classes\Response $res
      * @return void
      */
-    public static function updateUser(Request $req, Response $res)
+    public static function updateCourse(Request $req, Response $res)
     {
 
 

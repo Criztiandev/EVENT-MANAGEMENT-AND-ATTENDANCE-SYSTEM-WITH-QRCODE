@@ -13,7 +13,7 @@ require from("views/helper/partials/sidebar.partials.php");
                 Update Course
             </h2>
 
-            <form action="/course/create" method="POST">
+            <form action="/course/update" method="POST">
 
 
                 <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">

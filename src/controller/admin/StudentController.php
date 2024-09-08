@@ -5,8 +5,10 @@ namespace controller\admin;
 use lib\Mangoose\Model;
 use lib\Router\classes\Request;
 use lib\Router\classes\Response;
-use Ramsey\Uuid\Rfc4122\UuidV4;
 use Ramsey\Uuid\Uuid;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
 
 class StudentController
 {
@@ -92,8 +94,12 @@ class StudentController
             $studentID = $req->query["id"];
             $studentModel = new Model("STUDENT");
             $accountModel = new Model("USERS");
+            $courseModel = new Model("COURSE");
+            $departmentModel = new Model("DEPARTMENT");
 
             $students = $studentModel->findOne(["ID" => $studentID]);
+            $department_list = $departmentModel->find([]);
+            $course_list = $courseModel->find([]);
 
             $account_credentials = $accountModel->findOne(
                 ["ID" => $students["USER_ID"]],
@@ -110,7 +116,9 @@ class StudentController
                 self::BASE_URL . "/pages/update.page.php",
                 [
                     "UID" => $studentID,
-                    "details" => $transformed_students,
+                    "department_list" => $department_list,
+                    "course_list" => $course_list,
+                    "student_details" => $transformed_students,
                     "roles" => self::ROLES
                 ]
             );
@@ -142,13 +150,13 @@ class StudentController
 
         // check if the email exist
 
-        $existingEmail = $accountModel->findOne(["EMAIL" => $credentials["EMAIL"], ]);
+        $existingEmail = $accountModel->findOne(["EMAIL" => $credentials["EMAIL"],]);
 
         if ($existingEmail) {
             $res->status(400)->redirect("/student/create", ["error" => "Email  Already exist"]);
         }
 
-        $existingPhoneNumber = $accountModel->findOne(["PHONE_NUMBER" => $credentials["PHONE_NUMBER"], ]);
+        $existingPhoneNumber = $accountModel->findOne(["PHONE_NUMBER" => $credentials["PHONE_NUMBER"],]);
 
         if ($existingPhoneNumber) {
             $res->status(400)->redirect("/student/create", ["error" => "Phone number  Already exist"]);
@@ -203,11 +211,49 @@ class StudentController
      * @param \lib\Router\classes\Response $res
      * @return void
      */
-    public static function updateUser(Request $req, Response $res)
+    public static function updateStudent(Request $req, Response $res)
     {
 
+        $student_id = $req->query["id"];
+        $credentials = $req->body;
 
-        // $res->status(200)->redirect("/users/update?id=" . $UID, ["success" => "Update Successfull"]);
+        $studentModel = new Model("STUDENT");
+        $accountModel = new Model("USERS");
+
+        $student_credentials = $studentModel->findOne(["ID" => $student_id]);
+        $account_credentials = $accountModel->findOne(["ID" => $student_credentials["USER_ID"]]);
+
+        if (!$student_credentials || !$account_credentials) {
+            $res->status(400)->redirect("/student/update?id=" . $student_id, ["error" => "Student does'nt exist "]);
+        }
+
+        $updated_account_credentials = $accountModel->updateOne([
+            "FIRST_NAME" => $credentials["FIRST_NAME"],
+            "LAST_NAME" => $credentials["LAST_NAME"],
+            "PHONE_NUMBER" => $credentials["PHONE_NUMBER"],
+            "GENDER" => $credentials["GENDER"],
+            "ADDRESS" => $credentials["ADDRESS"],
+            "EMAIL" => $credentials["EMAIL"],
+        ], ["ID" => $student_credentials["USER_ID"]]);
+
+        if (!$updated_account_credentials) {
+            $res->status(400)->redirect("/student/update?id=" . $student_id, ["error" => "Update Student Account Failed"]);
+        }
+
+        $updated_student_credentials = $studentModel->updateOne([
+            "STUDENT_ID" => $credentials["STUDENT_ID"],
+            "YEAR_LEVEL" => $credentials["YEAR_LEVEL"],
+            "DEPARTMENT_ID" => $credentials["DEPARTMENT_ID"],
+            "COURSE_ID" => $credentials["COURSE_ID"],
+        ], ["ID" => $student_id]);
+
+
+        if (!$updated_student_credentials) {
+            $res->status(400)->redirect("/student/update?id=" . $student_id, ["error" => "Update Student Details Failed"]);
+        }
+
+
+        $res->status(200)->redirect("/student/update?id=" . $student_id, ["success" => "Update Successfully"]);
     }
 
     /**
@@ -253,6 +299,118 @@ class StudentController
 
 
     }
+
+    public static function importStudent(Request $req, Response $res)
+    {
+        $credentials = $req->body;
+        $UID = Uuid::uuid4()->toString();
+
+        $studentModel = new Model("STUDENT");
+        $accountModel = new Model("USERS");
+
+        if (isset($_FILES['excelFile'])) {
+
+            $fileName = $_FILES['excelFile']['tmp_name'];
+            $fileType = IOFactory::identify($fileName);  // Determine the file type (XLSX, XLS)
+            $reader = IOFactory::createReader($fileType);
+            $spreadsheet = $reader->load($fileName);
+            $sheetData = $spreadsheet->getActiveSheet()->toArray();  // Get all data as array
+
+
+            if ($fileType != "Xlsx") {
+                $res->status(400)->redirect("/student", ["error" => "File format is invalid"]);
+            }
+
+            // remove the first
+            $header = $sheetData[0];
+            $dataRows = array_slice($sheetData, 1);
+
+            $studentsData = [];
+            foreach ($dataRows as $row) {
+                $student = [];
+                foreach ($header as $index => $columnName) {
+                    // Handle empty column names gracefully
+                    if ($columnName) {
+                        $student[$columnName] = $row[$index] ?? null;
+                    }
+                }
+                $studentsData[] = $student;
+            }
+
+
+
+
+            foreach ($studentsData as $credentials) {
+                $existingEmail = $accountModel->findOne(["EMAIL" => $credentials["EMAIL"],]);
+
+
+                if ($existingEmail) {
+                    $res->status(400)->redirect("/student", ["error" => "Email  Already exist"]);
+                }
+
+
+                $existingPhoneNumber = $accountModel->findOne(["PHONE_NUMBER" => $credentials["PHONE_NUMBER"],]);
+
+                if ($existingPhoneNumber) {
+
+                }
+
+                $existingStudent = $studentModel->findOne(["STUDENT_ID" => $credentials["STUDENT_ID"]]);
+
+                if ($existingStudent) {
+                    $res->status(400)->redirect("/student", ["error" => "Student Already exist"]);
+                }
+
+                $hashed_password = password_hash($credentials["PASSWORD"], PASSWORD_BCRYPT, ["cost" => 10]);
+
+                // create the account
+                $accountCredentials = $accountModel->createOne([
+                    "ID" => $UID,
+                    "FIRST_NAME" => $credentials["FIRST_NAME"],
+                    "LAST_NAME" => $credentials["LAST_NAME"],
+                    "PHONE_NUMBER" => $credentials["PHONE_NUMBER"],
+                    "GENDER" => $credentials["GENDER"],
+                    "ADDRESS" => $credentials["ADDRESS"],
+                    "EMAIL" => $credentials["EMAIL"],
+                    "PASSWORD" => $hashed_password,
+                    "ROLE" => "student"
+                ]);
+
+                if (!$accountCredentials) {
+                    $res->status(400)->redirect("/student", ["error" => "Create Student Account Failed"]);
+                }
+
+                $studentCredentials = $studentModel->createOne([
+                    "ID" => Uuid::uuid4()->toString(),
+                    "USER_ID" => $UID,
+                    "STUDENT_ID" => $credentials["STUDENT_ID"],
+                    "YEAR_LEVEL" => $credentials["YEAR_LEVEL"],
+                    "DEPARTMENT_ID" => null,
+                    "COURSE_ID" => null,
+                ]);
+
+
+                if (!$studentCredentials) {
+                    $res->status(400)->redirect("/student", ["error" => "Create Student Details Failed"]);
+                }
+
+
+            }
+            return $res->status(200)->redirect("/student", ["success" => "Student created successfully"]);
+
+        } else {
+            $res->status(400)->redirect("/student", ["error" => "File not uploaded"]);
+        }
+
+
+
+
+
+
+
+
+    }
+
 
 
     protected static function userExist($email, $phone_number)
