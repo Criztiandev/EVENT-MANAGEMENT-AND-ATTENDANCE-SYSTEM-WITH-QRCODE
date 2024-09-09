@@ -1,4 +1,3 @@
-1. Administrator Update
 2. Event Update
 3. Pritable Format
 4. Analytics
