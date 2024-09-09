@@ -59,6 +59,8 @@ $router->get("/operator/delete", fn(Request $req, Response $res) => OperatorCont
 // operator Actions
 $router->post("/operator/create", fn(Request $req, Response $res) => OperatorController::createOperator($req, $res));
 $router->delete("/operator/delete", fn(Request $req, Response $res) => OperatorController::deleteOperator($req, $res));
+$router->put("/operator/update", fn(Request $req, Response $res) => OperatorController::updateOperator($req, $res));
+
 
 
 // organization
