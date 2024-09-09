@@ -91,12 +91,17 @@ class OperatorController
             $operatorID = $req->query["id"];
             $operatorModel = new Model("OPERATOR");
             $accountModel = new Model("USERS");
+            $organizationModel = new Model("ORGANIZATION");
+            $positionModel = new Model("POSITION");
 
             $operators = $operatorModel->findOne(["ID" => $operatorID]);
 
+            $organization_list = $organizationModel->find([]);
+            $position_list = $positionModel->find([]);
+
+
             $account_credentials = $accountModel->findOne(
                 ["ID" => $operators["USER_ID"]],
-
             );
 
             $transformed_operators = [
@@ -110,7 +115,9 @@ class OperatorController
                 [
                     "UID" => $operatorID,
                     "details" => $transformed_operators,
-                    "roles" => self::ROLES
+                    "organization_list" => $organization_list,
+                    "position_list" => $position_list,
+                    "roles" => self::ROLES,
                 ]
             );
         } catch (\Exception $e) {
@@ -197,11 +204,50 @@ class OperatorController
      * @param \lib\Router\classes\Response $res
      * @return void
      */
-    public static function updateUser(Request $req, Response $res)
+    public static function updateOperator(Request $req, Response $res)
     {
+        $credentials = $req->body;
+        $organization_id = $req->query["id"];
 
 
-        // $res->status(200)->redirect("/users/update?id=" . $UID, ["success" => "Update Successfull"]);
+        $operatorModel = new Model("OPERATOR");
+        $accountModel = new Model("USERS");
+
+        $operator_credentials = $operatorModel->findOne(["ID" => $organization_id]);
+
+        if (!$operator_credentials) {
+            $res->status(400)->redirect("/operator/update?id=" . $organization_id, ["error" => "Update Operator Details Failed"]);
+        }
+
+        unset($credentials["_method"]);
+
+
+        $updated_account = $accountModel->updateOne([
+            "FIRST_NAME" => $credentials["FIRST_NAME"],
+            "LAST_NAME" => $credentials["LAST_NAME"],
+            "PHONE_NUMBER" => $credentials["PHONE_NUMBER"],
+            "GENDER" => $credentials["GENDER"],
+            "ADDRESS" => $credentials["ADDRESS"],
+            "EMAIL" => $credentials["EMAIL"]
+        ], ["ID" => $credentials["USER_ID"]]);
+
+
+
+        if (!$updated_account) {
+            $res->status(400)->redirect("/operator/update?id=" . $organization_id, ["error" => "Update Operator Details Failed"]);
+        }
+
+        $updated_credentials = $operatorModel->updateOne([
+            "OPERATOR_ID" => $credentials["OPERATOR_ID"],
+            "ORGANIZATION_ID" => $credentials["ORGANIZATION_ID"],
+            "POSITION_ID" => $credentials["POSITION_ID"],
+        ], ["ID" => $organization_id]);
+
+        if (!$updated_credentials) {
+            $res->status(400)->redirect("/operator/update?id=" . $organization_id, ["error" => "Update Operator Details Failed"]);
+        }
+
+        $res->status(200)->redirect("/operator/update?id=" . $organization_id, ["success" => "Update Successful"]);
     }
 
     /**
