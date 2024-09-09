@@ -28,6 +28,8 @@ $router->get("/event/session-start", fn(Request $req, Response $res) => EventCon
 // Event Actions
 $router->post("/event/create", fn(Request $req, Response $res) => EventController::createEvent($req, $res));
 $router->delete("/event/delete", fn(Request $req, Response $res) => EventController::deleteEvent($req, $res));
+$router->put("/event/update", fn(Request $req, Response $res) => EventController::updateEvent($req, $res));
+
 
 $router->post("/event/session-start", fn(Request $req, Response $res) => EventController::startEvent($req, $res));
 $router->post("/event/session-end", fn(Request $req, Response $res) => EventController::endEvent($req, $res));
