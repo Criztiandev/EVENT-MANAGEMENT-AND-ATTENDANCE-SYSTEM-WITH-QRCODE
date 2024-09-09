@@ -92,7 +92,7 @@ class EventController
 
 
 
-        $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["departmentList" => $departmentCredentials, "courseList" => $courseCredentials,"organization_list" => $organization_list,"roles" => self::ROLES]);
+        $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["departmentList" => $departmentCredentials, "courseList" => $courseCredentials, "organization_list" => $organization_list, "roles" => self::ROLES]);
     }
 
 
@@ -107,9 +107,14 @@ class EventController
         try {
             $eventID = $req->query["id"];
             $eventModel = new Model("EVENT");
-
+            $organizationModel = new Model("ORGANIZATION");
+            $departmentModel = new Model("DEPARTMENT");
+            $courseModel = new Model("COURSE");
             $credentials = $eventModel->findOne(["ID" => $eventID]);
 
+            $organization_list = $organizationModel->find([]);
+            $department_list = $departmentModel->find([]);
+            $course_list = $courseModel->find([]);
 
             if (!$credentials) {
                 $res->status(400)->redirect("/users/update?id=" . $eventID, ["error" => "Event doesn't exist"]);
@@ -121,6 +126,9 @@ class EventController
                 [
                     "UID" => $eventID,
                     "details" => $credentials,
+                    "organization_list" => $organization_list,
+                    "department_list" => $department_list,
+                    "course_list" => $course_list,
                     "roles" => self::ROLES
                 ]
             );
@@ -226,11 +234,26 @@ class EventController
      * @param \lib\Router\classes\Response $res
      * @return void
      */
-    public static function updateUser(Request $req, Response $res)
+    public static function updateEvent(Request $req, Response $res)
     {
+        $credentials = $req->body;
+        $event_id = $req->query["id"];
+        $eventModel = new Model("EVENT");
+
+        $event_credentials = $eventModel->findOne(["ID" => $event_id]);
+        if (!$event_credentials) {
+            $res->status(400)->redirect("/event/update?id=" . $event_id, ["error" => "Event doesn't exist"]);
+        }
 
 
-        // $res->status(200)->redirect("/users/update?id=" . $UID, ["success" => "Update Successfull"]);
+        unset($credentials["_method"]);
+        $update_event = $eventModel->updateOne([...$credentials], ["ID" => $event_id]);
+        if (!$update_event) {
+            $res->status(400)->redirect("/event/update?id=" . $event_id, ["error" => "Event doesn't exist"]);
+        }
+
+
+        $res->status(200)->redirect("/event/update?id=" . $event_id, ["success" => "Update Successful"]);
     }
 
     /**
@@ -321,25 +344,25 @@ class EventController
             return $EVENT_ID === $attendee["EVENT_ID"];
         });
 
-        $transformed_attendees_list = array_map(function ($attendee) use ($event_credentials)  {
+        $transformed_attendees_list = array_map(function ($attendee) use ($event_credentials) {
             $studentModel = new Model("STUDENT");
             $accountModel = new Model("USERS");
             $courseModel = new Model("COURSE");
             $departmentModel = new Model("DEPARTMENT");
 
 
-            $student_credentials = $studentModel->findOne(["STUDENT_ID"=> $attendee["STUDENT_ID"]]);
+            $student_credentials = $studentModel->findOne(["STUDENT_ID" => $attendee["STUDENT_ID"]]);
             $account_credentials = $accountModel->findOne(["ID" => $student_credentials["USER_ID"]]);
-            $course_credentials = $courseModel->findOne(["ID"=> $student_credentials["COURSE_ID"]]);
-            $department_credentials = $departmentModel->findOne(["ID"=> $student_credentials["DEPARTMENT_ID"]]);
+            $course_credentials = $courseModel->findOne(["ID" => $student_credentials["COURSE_ID"]]);
+            $department_credentials = $departmentModel->findOne(["ID" => $student_credentials["DEPARTMENT_ID"]]);
 
-   
+
 
             return [
                 ...$attendee,
                 "STUDENT_ID" => $attendee["STUDENT_ID"],
-                "FULLNAME" => $account_credentials["FIRST_NAME"] . "". $account_credentials["LAST_NAME"],
-                "COURSE_NAME"=> $course_credentials["NAME"],
+                "FULLNAME" => $account_credentials["FIRST_NAME"] . "" . $account_credentials["LAST_NAME"],
+                "COURSE_NAME" => $course_credentials["NAME"],
                 "DEPARTMENT_NAME" => $department_credentials["NAME"],
                 "YEAR_LEVEL" => $student_credentials["YEAR_LEVEL"],
                 "CHECK_IN_TIME_AM" => $attendee["CHECK_IN_TIME_AM"],
@@ -351,7 +374,7 @@ class EventController
         }, $filtered_attendees_list);
 
 
-        $res->status(200)->render(self::BASE_URL . "/pages/print.attendance.php" , ["attendees_list" => $transformed_attendees_list]);
+        $res->status(200)->render(self::BASE_URL . "/pages/print.attendance.php", ["attendees_list" => $transformed_attendees_list]);
     }
 
     public static function joinEvent(Request $req, Response $res)
@@ -411,7 +434,7 @@ class EventController
         }
 
 
-        $res->status(200)->redirect("/event/qr-code?id=" . $EVENT_ID . "&UID=" . $UID ."&action=display", [
+        $res->status(200)->redirect("/event/qr-code?id=" . $EVENT_ID . "&UID=" . $UID . "&action=display", [
             "message" => "Event joined successfully",
             "qr_code_path" => $qrCodePath,
             "join_link" => $joinLink
@@ -429,13 +452,13 @@ class EventController
 
         $event_credentials = $eventModel->findOne(["ID" => $EVENT_ID]);
 
-        if(!$event_credentials){
+        if (!$event_credentials) {
             $res->status(404)->redirect("/", ["error" => "Event doesnt exist"]);
         }
 
         $organization_credentials = $organizationModel->findOne(["ID" => $event_credentials["ORGANIZATION_ID"]]);
-       
-        if(!$organization_credentials){
+
+        if (!$organization_credentials) {
             $res->status(404)->redirect("/", ["error" => "Organization doesnt exist"]);
         }
 
@@ -448,13 +471,13 @@ class EventController
             $res->status(400)->render("views/error.page.php", ["error" => "Event has ended. QR code is no longer available."]);
             return;
         }
-    
+
         $directory = __DIR__ . "/../../assets/qr_codes/events";
         $qrCodePath = $directory . "/" . $EVENT_ID . "_user_" . $UID . ".svg";
-    
+
         if (file_exists($qrCodePath)) {
             $svgContent = file_get_contents($qrCodePath);
-            
+
             if ($action === 'download') {
                 $res->header("Content-Type", "image/svg+xml");
                 $res->header("Content-Disposition", "attachment; filename=\"qr_code.svg\"");
@@ -465,7 +488,7 @@ class EventController
                 // Display action
                 $res->status(200)->render(
                     "views/user/pages/download.page.php",
-                    [   
+                    [
                         "eventName" => $event_credentials["NAME"],
                         "organization" => $organization_credentials["NAME"],
                         "message" => "Event joined successfully",
