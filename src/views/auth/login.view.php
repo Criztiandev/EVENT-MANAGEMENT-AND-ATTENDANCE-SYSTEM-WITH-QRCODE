@@ -3,9 +3,12 @@
 <main class="h-screen w-full">
     <section class="">
         <div class="grid grid-cols-2  mx-auto md:h-screen lg:py-0">
-            <div></div>
-            <div class=" w-full  rounded-lg shadow dark:border  flex justify-center items-center ">
-                <div class="space-y-4 md:space-y-6 sm:p-8">
+            <div>
+                <img src="https://scontent.fmnl4-4.fna.fbcdn.net/v/t39.30808-6/429790614_904207481401840_8505595911236624227_n.png?_nc_cat=100&ccb=1-7&_nc_sid=cc71e4&_nc_eui2=AeEqJfTCq89QFuoyl6kQsIcjOnUZVCNB7FA6dRlUI0HsUElrXW4ZsfUP4TxhsE_AbuD2bWKgEw2QALI-reUbBEoP&_nc_ohc=cy9yv_epJHsQ7kNvgGX4X1W&_nc_ht=scontent.fmnl4-4.fna&oh=00_AYDPazMkLu9nakkprcaHl5le6qH4y5F_s34VuVCjYWhZXw&oe=66E57AFE"
+                    class="object-cover w-full h-full absolute z-1" alt="background">
+            </div>
+            <div class=" absolute inset-0  w-full  rounded-lg shadow dark:border  flex justify-center items-center ">
+                <div class=" space-y-4 md:space-y-6 sm:p-8 border bg-white/80 rounded-md">
                     <h1
                         class="text-xl font-bold leading-tight tracking-tight  md:text-2xl dark:text-white text-center ">
                         Sign in to your account

@@ -37,10 +37,15 @@ class StudentController
     {
         try {
             $studentModel = self::getBaseModel();
+            $departmentModel = new Model("DEPARTMENT");
+            $courseModel = new Model("COURSE");
+
+
             $students = $studentModel->find();
+            $department_list = $departmentModel->find();
+            $course_list = $courseModel->find();
 
             $transformed_students = [];
-
             foreach ($students as $details) {
                 $accountResult = (new Model("USERS"))->findOne(["ID" => $details["USER_ID"]]);
                 $courseResult = (new Model("COURSE"))->findOne(["ID" => $details["COURSE_ID"]], ["select" => "NAME"]);
@@ -57,7 +62,7 @@ class StudentController
                 ];
             }
 
-            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["students" => $transformed_students]);
+            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["department_list" => $department_list, "course_list" => $course_list, "students" => $transformed_students]);
 
         } catch (\Exception $e) {
             $res->status(500)->json(["error" => "Failed to fetch Students: " . $e->getMessage()]);

@@ -12,12 +12,49 @@ require from("views/helper/partials/sidebar.partials.php");
             <div
                 class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden overflow-y-scroll h-full border">
                 <div
-                    class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-                    <div class="w-full md:w-1/2">
-
-                        <?php display("views/helper/components/ui/SearchBar.php") ?>
-                    </div>
+                    >
                     <div
+                        class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+                        <div class="w-full">
+                            <input type="text" id="search-input" class="w-full px-3 py-2 border rounded-md"
+                                placeholder="Search students...">
+                        </div>
+                        <div class="w-full flex justify-end space-x-2">
+                                <select name="DEPARTMENT_ID" id="department-filter"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    required>
+                                    <option value="">All Department</option>
+                                    <?php foreach ($department_list as $department): ?>
+                                        <option value="<?= $department["NAME"] ?>"><?= $department["NAME"] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+
+
+                                <select name="COURSE_ID" id="course-filter"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    required>
+                                    <option value="">All Course</option>
+                                    <?php foreach ($course_list as $items): ?>
+                                        <option data-department="<?= $items["DEPARTMENT_ID"] ?>"
+                                            value="<?= $items["NAME"] ?>"><?= $items["NAME"] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+
+
+                                <select name="YEAR_LEVEL" id="year-filter"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    required>
+                                    <option disabled selected>Select your Year level</option>
+                                    <option value="1">1st year</option>
+                                    <option value="2">2nd year</option>
+                                    <option value="3">3rd year</option>
+                                    <option value="4">4th year</option>
+                                </select>
+
+
+
+                        </div>
+                        <div
                         class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
 
                         <form action="/student/import" method="POST" enctype="multipart/form-data"
@@ -46,8 +83,10 @@ require from("views/helper/partials/sidebar.partials.php");
                         </a>
 
                     </div>
-                </div>
-                <div class="overflow-x-auto" style="height: calc(100vh - 240px);">
+                    </div>
+
+                    
+                    <div class="overflow-x-auto" style="height: calc(100vh - 240px);">
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
@@ -61,30 +100,19 @@ require from("views/helper/partials/sidebar.partials.php");
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php foreach ($students as $items): ?>
+                        <tbody id="student-table-body">
+                            <?php foreach ($students as $student): ?>
                                 <tr class="border-b dark:border-gray-700">
-                                    <th scope="row"
-                                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <?= $items["STUDENT_ID"] ?>
+                                    <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <?= $student["STUDENT_ID"] ?>
                                     </th>
-                                    <td class="px-4 py-3">
-                                        <?= $items["FULL_NAME"] ?>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <?= $items["DEPARTMENT"] ?>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <?= $items["COURSE"] ?>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <?= $items["YEAR_LEVEL"] ?> YEAR
-                                    </td>
-                                    <td class=" flex justify-center items-center">
-
-                                        <a href="/student/update?id=<?= $items["ID"] ?>" type="button"
-                                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                            <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18'
+                                    <td class="px-4 py-3"><?= $student["FULL_NAME"] ?></td>
+                                    <td class="px-4 py-3"><?= $student["DEPARTMENT"] ?></td>
+                                    <td class="px-4 py-3"><?= $student["COURSE"] ?></td>
+                                    <td class="px-4 py-3"><?= $student["YEAR_LEVEL"] ?> YEAR</td>
+                                    <td class="flex justify-center items-center">
+                                        <a href="/student/update?id=<?= $student["ID"] ?>" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                        <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18'
                                                 viewBox='0 0 24 24'>
                                                 <title>edit_2_fill</title>
                                                 <g id="edit_2_fill" fill='none' fill-rule='nonzero'>
@@ -96,10 +124,8 @@ require from("views/helper/partials/sidebar.partials.php");
                                             </svg>
                                             <span class="sr-only">Icon description</span>
                                         </a>
-
-                                        <button type="button" data-delete-id="<?= $items["ID"] ?>"
-                                            class="delete-modal-btn text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                            <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18'
+                                        <button type="button" data-delete-id="<?= $student["ID"] ?>" class="delete-modal-btn text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                        <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18'
                                                 viewBox='0 0 24 24'>
                                                 <title>delete_2_fill</title>
                                                 <g id="delete_2_fill" fill='none' fill-rule='evenodd'>
@@ -111,89 +137,109 @@ require from("views/helper/partials/sidebar.partials.php");
                                             </svg>
                                             <span class="sr-only">Icon description</span>
                                         </button>
-
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                    </div>
+                    
+                    <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
+                        aria-label="Table navigation">
+                        <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                            Showing
+                            <span class="font-semibold text-gray-900 dark:text-white">1-10</span>
+                            of
+                            <span class="font-semibold text-gray-900 dark:text-white">1000</span>
+                        </span>
+                        <ul class="inline-flex items-stretch -space-x-px">
+                            <li>
+                                <a href="#"
+                                    class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                    <span class="sr-only">Previous</span>
+                                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
+                            </li>
+                            <li>
+                                <a href="#" aria-current="page"
+                                    class="flex items-center justify-center text-sm z-10 py-2 px-3 leading-tight text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">...</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">100</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                    <span class="sr-only">Next</span>
+                                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
-                <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
-                    aria-label="Table navigation">
-                    <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
-                        Showing
-                        <span class="font-semibold text-gray-900 dark:text-white">1-10</span>
-                        of
-                        <span class="font-semibold text-gray-900 dark:text-white">1000</span>
-                    </span>
-                    <ul class="inline-flex items-stretch -space-x-px">
-                        <li>
-                            <a href="#"
-                                class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                <span class="sr-only">Previous</span>
-                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#"
-                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
-                        </li>
-                        <li>
-                            <a href="#"
-                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-                        </li>
-                        <li>
-                            <a href="#" aria-current="page"
-                                class="flex items-center justify-center text-sm z-10 py-2 px-3 leading-tight text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
-                        </li>
-                        <li>
-                            <a href="#"
-                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">...</a>
-                        </li>
-                        <li>
-                            <a href="#"
-                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">100</a>
-                        </li>
-                        <li>
-                            <a href="#"
-                                class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                <span class="sr-only">Next</span>
-                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
             </div>
-        </div>
     </section>
 </main>
-
 <script>
-    $(document).ready(function () {
-        const form = $("#import_student_form")
-        const trigger = $("#import_student_trigger");
-        const input = $("#import_student");
+$(document).ready(function() {
+    function filterStudents() {
+        var searchText = $('#search-input').val().toLowerCase();
+        var departmentFilter = $('#department-filter').val();
+        var courseFilter = $('#course-filter').val();
+        var yearFilter = $('#year-filter').val();
 
-        trigger.on("click", function () {
-            input.click();  // Trigger the file input click event
+        $('#student-table-body tr').each(function() {
+            var row = $(this);
+            var studentId = row.find('th').text().toLowerCase();
+            var fullName = row.find('td:eq(0)').text().toLowerCase();
+            var department = row.find('td:eq(1)').text();
+            var course = row.find('td:eq(2)').text();
+            var yearLevel = row.find('td:eq(3)').text().split(' ')[0];
 
-            // Optional: If you want to submit the form immediately after selecting the file
-            input.on("change", function () {
-                form.submit();  // Submit the form when a file is selected
-            });
+            var matchesSearch = studentId.includes(searchText) || fullName.includes(searchText);
+            var matchesDepartment = !departmentFilter || department === departmentFilter;
+            var matchesCourse = !courseFilter || course === courseFilter;
+            var matchesYear = !yearFilter || yearLevel === yearFilter;
+
+            if (matchesSearch && matchesDepartment && matchesCourse && matchesYear) {
+                row.show();
+            } else {
+                row.hide();
+            }
         });
-    });
+    }
+
+    $('#search-input').on('input', filterStudents);
+    $('#department-filter, #course-filter, #year-filter').on('change', filterStudents);
+
+    // Log for debugging
+    console.log("Script loaded and running");
+});
 </script>
+
 
 <?php display("views/helper/components/ui/DeleteModal.php", ["route" => "/student/delete"]) ?>
 

@@ -47,6 +47,9 @@ class EventController
         try {
             $eventModel = self::getBaseModel();
             $events = $eventModel->find();
+            $departmentModel = new Model("DEPARTMENT");
+            $courseModel = new Model("COURSE");
+            
 
             $transformed_event = array_map(function ($event) {
                 $departmentModel = new Model("DEPARTMENT");
