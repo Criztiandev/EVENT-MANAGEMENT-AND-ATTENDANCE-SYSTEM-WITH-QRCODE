@@ -331,11 +331,22 @@ class EventController
         $EVENT_ID = $req->query["id"];
         $eventModel = new Model("EVENT");
         $attendanceModel = new Model("ATTENDANCE");
+        $departmentModel = new Model("DEPARTMENT");
+        $courseModel = new Model("COURSE");
+        $organizationModel = new Model("ORGANIZATION");
+
 
         $event_credentials = $eventModel->findOne(["ID" => $EVENT_ID, "STATUS" => "END"]);
         if (!$event_credentials) {
             $res->status(400)->redirect("/event/session-start?id=" . $EVENT_ID, ["error" => "Event doesn't exist"]);
         }
+
+
+        $event_department_name = $departmentModel->findOne(["ID" => $event_credentials["DEPARTMENT_ID"]], ["select" => "NAME"]);
+        $event_course_name = $courseModel->findOne(["ID" => $event_credentials["COURSE_ID"]], ["select" => "NAME"]);
+        $event_organization_name = $organizationModel->findOne(["ID" => $event_credentials["ORGANIZATION_ID"]], ["select" => "NAME"]);
+
+
 
         // get all attendance related to this event
         $attendees_list = $attendanceModel->find([]);
@@ -374,7 +385,16 @@ class EventController
         }, $filtered_attendees_list);
 
 
-        $res->status(200)->render(self::BASE_URL . "/pages/print.attendance.php", ["attendees_list" => $transformed_attendees_list]);
+        $updated_event_details = [
+            ...$event_credentials,
+            "DEPARTMENT_NAME" => $event_department_name["NAME"],
+            "COURSE_NAME" => $event_course_name["NAME"],
+            "ORGANIZATION_NAME" => $event_organization_name["NAME"],
+        ];
+
+
+
+        $res->status(200)->render(self::BASE_URL . "/pages/print.attendance.php", ["details" => $updated_event_details, "attendees_list" => $transformed_attendees_list]);
     }
 
     public static function joinEvent(Request $req, Response $res)
