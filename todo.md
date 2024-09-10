@@ -1,5 +1,3 @@
-2. Event Update
-3. Pritable Format
 4. Analytics
 5. backup-logs
 6. clear logs
