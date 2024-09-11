@@ -32,7 +32,16 @@ class AuthController
      */
     public static function registerScreen(Request $req, Response $res)
     {
-        $res->status(200)->render("views/auth/register.view.php");
+        $departmentModel = new Model("DEPARTMENT");
+        $courseModel = new Model("COURSE");
+
+        $deparment_list = $departmentModel->find([]);
+        $course_list = $courseModel->find([]);
+
+        $res->status(200)->render("views/auth/register.view.php", [
+            "department_list" => $deparment_list,
+            "course_list" => $course_list,
+        ]);
     }
 
 
@@ -80,38 +89,70 @@ class AuthController
      * @param \lib\Router\classes\Response $res
      * @return void
      */
-    public static function registerUser(Request $req, Response $res)
+    public static function registerStudent(Request $req, Response $res)
     {
-        $email = $req->body["EMAIL"];
-        $password = $req->body["PASSWORD"];
-        $phone_number = $req->body["PHONE_NUMBER"];
+        $credentials = $req->body;
+        $UID = Uuid::uuid4()->toString();
 
-        // check if user exist
-        $userModel = new Model("USERS");
+        $studentModel = new Model("STUDENT");
+        $accountModel = new Model("USERS");
 
-        $user_exist = $userModel->findOne(["#or" => ["EMAIL" => $email, "PHONE_NUMBER" => $phone_number]], ["select" => "ID"]);
-        if ($user_exist) {
-            $res->status(400)->redirect("/register", ["error" => "User already exist"]);
+
+        // check if the email exist
+
+        $existingEmail = $accountModel->findOne(["EMAIL" => $credentials["EMAIL"],]);
+
+        if ($existingEmail) {
+            $res->status(400)->redirect("/register", ["error" => "Email  Already exist"]);
         }
 
+        $existingPhoneNumber = $accountModel->findOne(["PHONE_NUMBER" => $credentials["PHONE_NUMBER"],]);
 
-        $hashed_password = password_hash($password, PASSWORD_BCRYPT, ["cost" => 10]);
-        unset($req->body["PASSWORD"]);
+        if ($existingPhoneNumber) {
+            $res->status(400)->redirect("/register", ["error" => "Phone number  Already exist"]);
+        }
 
-        $UID = Uuid::uuid4()->toString();
-        $result = $userModel->createOne([
+        $existingStudent = $studentModel->findOne(["STUDENT_ID" => $credentials["STUDENT_ID"]]);
+
+        if ($existingStudent) {
+            $res->status(400)->redirect("/register", ["error" => "Student Already exist"]);
+        }
+
+        $hashed_password = password_hash($credentials["PASSWORD"], PASSWORD_BCRYPT, ["cost" => 10]);
+
+        // create the account
+        $accountCredentials = $accountModel->createOne([
             "ID" => $UID,
-            ...$req->body,
+            "FIRST_NAME" => $credentials["FIRST_NAME"],
+            "LAST_NAME" => $credentials["LAST_NAME"],
+            "PHONE_NUMBER" => $credentials["PHONE_NUMBER"],
+            "GENDER" => $credentials["GENDER"],
+            "ADDRESS" => $credentials["ADDRESS"],
+            "EMAIL" => $credentials["EMAIL"],
             "PASSWORD" => $hashed_password,
+            "ROLE" => "student"
         ]);
 
-        if (!$result) {
-            $res->status(400)->redirect("/register", ["error" => "User already exist"]);
+        if (!$accountCredentials) {
+            $res->status(400)->redirect("/register", ["error" => "Create Student Account Failed"]);
         }
 
-        $res->status(200)->redirect("/", ["success" => "Registered successfully"]);
+        $studentCredentials = $studentModel->createOne([
+            "ID" => Uuid::uuid4()->toString(),
+            "USER_ID" => $UID,
+            "STUDENT_ID" => $credentials["STUDENT_ID"],
+            "YEAR_LEVEL" => $credentials["YEAR_LEVEL"],
+            "DEPARTMENT_ID" => $credentials["DEPARTMENT_ID"],
+            "COURSE_ID" => $credentials["COURSE_ID"],
+        ]);
 
 
+        if (!$studentCredentials) {
+            $res->status(400)->redirect("/register", ["error" => "Create Student Details Failed"]);
+        }
+
+
+        return $res->status(200)->redirect("/register", ["success" => "Student created successfully"]);
     }
 
 
