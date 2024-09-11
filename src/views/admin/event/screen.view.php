@@ -13,13 +13,50 @@ require from("views/helper/partials/sidebar.partials.php");
                 class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden overflow-y-scroll h-full border">
                 <div
                     class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-                    <div class="w-full md:w-1/2">
 
-                        <?php display("views/helper/components/ui/SearchBar.php", ["details" => $details]) ?>
+                    <input type="text" id="search-input"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 w-full flex-grow-1 "
+                        placeholder="Search...">
 
-                    </div>
+
+                    <select name="DEPARTMENT_ID" id="DEPARTMENT"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 flex-grow-1 w-full"
+                        required>
+                        <option disabled selected>Select your Department</option>
+                        <?php foreach ($department_list as $department): ?>
+                            <option value="<?= $department["NAME"] ?>"><?= $department["NAME"] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+
+
+                    <select name="COURSE_ID" id="COURSE"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        required>
+                        <option disabled selected>Select Course</option>
+                        <?php foreach ($course_list as $course): ?>
+                            <option value="<?= $course["NAME"] ?>">
+                                <?= $course["NAME"] ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+
+
+
+                    <select name="STATUS_ID" id="STATUS"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        required>
+                        <option disabled selected>Select Status</option>\
+                        <option value="start">START</option>
+                        <option value="end">END</option>
+
+                    </select>
+
+
+
                     <div
                         class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
+
+
                         <a href="/event/create" type="button"
                             class="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                             <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20"
@@ -206,6 +243,55 @@ require from("views/helper/partials/sidebar.partials.php");
         </div>
     </section>
 </main>
+
+<script>
+    $(document).ready(function () {
+        // Function to filter table rows
+        function filterTable() {
+            var searchText = $('#search-input').val().toLowerCase();
+            var selectedDepartment = $('#DEPARTMENT').val() || 'Select your Department';
+            var selectedCourse = $('#COURSE').val() || 'Select Course';
+            var selectedStatus = $('#STATUS').val() || 'Select Status';
+
+            console.log("Filtering with:", { searchText, selectedDepartment, selectedCourse, selectedStatus });
+
+            $('table tbody tr').each(function () {
+                var row = $(this);
+                var cells = row.find('td, th');
+
+                // Adjust these indices based on your actual table structure
+                var nameText = cells.eq(0).text().trim();
+                var venueText = cells.eq(1).text().trim();
+                var departmentText = cells.eq(2).text().trim();
+                var courseText = cells.eq(3).text().trim();
+                var dateText = cells.eq(4).text().trim();
+                var timeText = cells.eq(5).text().trim();
+                var statusText = cells.eq(6).text().trim();
+
+                console.log("Row data:", { nameText, venueText, departmentText, courseText, dateText, timeText, statusText });
+
+                var matchSearch = [nameText, venueText, departmentText, courseText, dateText, timeText, statusText]
+                    .some(text => text.toLowerCase().includes(searchText));
+                var matchDepartment = selectedDepartment === 'Select your Department' || departmentText === selectedDepartment;
+                var matchCourse = selectedCourse === 'Select Course' || courseText === selectedCourse;
+                var matchStatus = selectedStatus === 'Select Status' || statusText.toLowerCase() === selectedStatus.toLowerCase();
+
+                if (matchSearch && matchDepartment && matchCourse && matchStatus) {
+                    row.show();
+                } else {
+                    row.hide();
+                }
+            });
+        }
+
+        // Add event listeners
+        $('#search-input').on('input', filterTable);
+        $('#DEPARTMENT, #COURSE, #STATUS').on('change', filterTable);
+
+        // Initial filter
+        filterTable();
+    });
+</script>
 
 <?php display("views/helper/components/ui/DeleteModal.php", ["route" => "/event/delete"]) ?>
 

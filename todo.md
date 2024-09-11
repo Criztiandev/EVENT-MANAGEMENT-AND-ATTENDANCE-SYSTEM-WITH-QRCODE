@@ -1,3 +1,4 @@
 4. Analytics
-5. backup-logs
-6. clear logs
+5. Filter event
+6. Clicable import
+7. registration

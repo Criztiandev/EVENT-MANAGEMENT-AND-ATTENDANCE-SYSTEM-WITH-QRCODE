@@ -49,7 +49,10 @@ class EventController
             $events = $eventModel->find();
             $departmentModel = new Model("DEPARTMENT");
             $courseModel = new Model("COURSE");
-            
+
+            $department_list = $departmentModel->find([]);
+            $course_list = $courseModel->find([]);
+
 
             $transformed_event = array_map(function ($event) {
                 $departmentModel = new Model("DEPARTMENT");
@@ -68,7 +71,7 @@ class EventController
             }, $events);
 
 
-            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["events" => array_reverse($transformed_event)]);
+            $res->status(200)->render(self::BASE_URL . "/screen.view.php", ["department_list" => $department_list, "course_list" => $course_list, "events" => array_reverse($transformed_event)]);
 
         } catch (\Exception $e) {
             $res->status(500)->json(["error" => "Failed to fetch Events: " . $e->getMessage()]);
@@ -91,8 +94,6 @@ class EventController
         $departmentCredentials = $departmentModel->find([]);
         $courseCredentials = $courseModel->find([]);
         $organization_list = $organizationModel->find([]);
-
-
 
 
         $res->status(200)->render(self::BASE_URL . "/pages/create.page.php", ["departmentList" => $departmentCredentials, "courseList" => $courseCredentials, "organization_list" => $organization_list, "roles" => self::ROLES]);
