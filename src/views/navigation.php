@@ -21,6 +21,30 @@ $user_navigation = [
                             />
                         </g>
                     </svg>'
+
+    ],
+
+    [
+        'path' => "/profile",
+        'title' => 'Profile',
+        'icon' => ' <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        >
+                        <title>home_4_line</title>
+                        <g id="home_4_line" fill="none" fill-rule="evenodd">
+                            <path
+                            d="M24 0v24H0V0zM12.593 23.258l-.011.002-.071.035-.02.004-.014-.004-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01-.017.428.005.02.01.013.104.074.015.004.012-.004.104-.074.012-.016.004-.017-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113-.013.002-.185.093-.01.01-.003.011.018.43.005.012.008.007.201.093c.012.004.023 0 .029-.008l.004-.014-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014-.034.614c0 .012.007.02.017.024l.015-.002.201-.093.01-.008.004-.011.017-.43-.003-.012-.01-.01z"
+                            />
+                            <path
+                            fill="currentColor"
+                            d="M10.8 2.65a2 2 0 0 1 2.4 0l7 5.25a2 2 0 0 1 .8 1.6V19a2 2 0 0 1-2 2h-4.9a1.1 1.1 0 0 1-1.1-1.1V14a1 1 0 1 0-2 0v5.9A1.1 1.1 0 0 1 9.9 21H5a2 2 0 0 1-2-2V9.5a2 2 0 0 1 .8-1.6zm1.2 1.6L5 9.5V19h4v-5a3 3 0 1 1 6 0v5h4V9.5z"
+                            />
+                        </g>
+                    </svg>'
+
     ],
 ];
 
@@ -62,10 +86,10 @@ $operator_navigation = [
 
 $admin_navigation = [
 
-        [
-            'path' => "/dashboard",
-            'title' => 'Dashboard',
-            'icon' => ' <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    [
+        'path' => "/dashboard",
+        'title' => 'Dashboard',
+        'icon' => ' <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                             <title>dashboard_2_line</title>
                             <g id="dashboard_2_line" fill="none">
                                 <path
@@ -74,13 +98,13 @@ $admin_navigation = [
                                     d="M12 2c5.523 0 10 4.477 10 10a9.972 9.972 0 0 1-2.938 7.08c-.4.4-1.05.392-1.44-.013l-.842-.873a1 1 0 1 1 1.44-1.388l.098.102a8 8 0 1 0-12.636 0l.098-.102a1 1 0 1 1 1.44 1.388l-.842.873a1.01 1.01 0 0 1-1.44.013A9.972 9.972 0 0 1 2 12C2 6.477 6.477 2 12 2m0 4a1 1 0 0 1 1 1v5.268A2 2 0 0 1 12 16a2 2 0 0 1-1-3.732V7a1 1 0 0 1 1-1" />
                             </g>
                         </svg>'
-        ],
+    ],
 
 
-        [
-            'path' => "/event",
-            'title' => 'Event',
-            'icon' => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    [
+        'path' => "/event",
+        'title' => 'Event',
+        'icon' => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                             <title>calendar_line</title>
                             <g id="calendar_line" fill="none">
                                 <path
@@ -89,12 +113,12 @@ $admin_navigation = [
                                     d="M16 3a1 1 0 0 1 .993.883L17 4v1h2a2 2 0 0 1 1.995 1.85L21 7v12a2 2 0 0 1-1.85 1.995L19 21H5a2 2 0 0 1-1.995-1.85L3 19V7a2 2 0 0 1 1.85-1.995L5 5h2V4a1 1 0 0 1 1.993-.117L9 4v1h6V4a1 1 0 0 1 1-1m3 9H5v7h14zm0-5H5v3h14z" />
                             </g>
                         </svg>'
-        ],
+    ],
 
-        [
-            'path' => "/department",
-            'title' => ' College',
-            'icon' => ' <svg
+    [
+        'path' => "/department",
+        'title' => ' College',
+        'icon' => ' <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -111,12 +135,12 @@ $admin_navigation = [
                                 />
                             </g>
                         </svg>'
-        ],
+    ],
 
-        [
-            'path' => "/course",
-            'title' => 'Course',
-            'icon' => ' <svg
+    [
+        'path' => "/course",
+        'title' => 'Course',
+        'icon' => ' <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -133,12 +157,12 @@ $admin_navigation = [
                                 />
                             </g>
                         </svg>'
-        ],
+    ],
 
-        [
-            'path' => "/student",
-            'title' => 'Student',
-            'icon' => ' <svg
+    [
+        'path' => "/student",
+        'title' => 'Student',
+        'icon' => ' <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -155,12 +179,12 @@ $admin_navigation = [
                                 />
                             </g>
                         </svg>'
-        ],
+    ],
 
-        [
-            'path' => "/organization",
-            'title' => 'Organization',
-            'icon' => '<svg
+    [
+        'path' => "/organization",
+        'title' => 'Organization',
+        'icon' => '<svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -177,13 +201,13 @@ $admin_navigation = [
                                 />
                             </g>
                         </svg>'
-        ],
+    ],
 
 
-        [
-            'path' => "/operator",
-            'title' => 'Administrator',
-            'icon' => '<svg
+    [
+        'path' => "/operator",
+        'title' => 'Administrator',
+        'icon' => '<svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -200,7 +224,7 @@ $admin_navigation = [
                                 />
                             </g>
                         </svg>'
-        ],
+    ],
 
 
 ];

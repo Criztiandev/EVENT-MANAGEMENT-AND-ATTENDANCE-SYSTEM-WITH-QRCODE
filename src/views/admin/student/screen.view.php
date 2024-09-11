@@ -203,6 +203,8 @@ require from("views/helper/partials/sidebar.partials.php");
             </div>
     </section>
 </main>
+
+
 <script>
 $(document).ready(function() {
     function filterStudents() {
@@ -234,12 +236,22 @@ $(document).ready(function() {
 
     $('#search-input').on('input', filterStudents);
     $('#department-filter, #course-filter, #year-filter').on('change', filterStudents);
-
-    // Log for debugging
-    console.log("Script loaded and running");
 });
 </script>
 
+<script>
+    $(document).ready(function() {
+        $('#import_student_trigger').click(function() {
+            $('#import_student').click();
+        });
+
+        $('#import_student').change(function() {
+            if (this.files.length > 0) {
+                $('#import_student_form').submit();
+            }
+        });
+    });
+</script>
 
 <?php display("views/helper/components/ui/DeleteModal.php", ["route" => "/student/delete"]) ?>
 
